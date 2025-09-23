@@ -4,10 +4,9 @@
 #include <QComboBox>
 #include <QDir>
 #include <QPushButton>
-#include <iostream>
 #include <QDesktopServices>
-
 #include "MainWizard.h"
+#include "SyncPage.h"
 
 WelcomePage::WelcomePage(QWidget *parent)
     : QWizardPage(parent)
@@ -16,10 +15,7 @@ WelcomePage::WelcomePage(QWidget *parent)
     auto* layout = new QVBoxLayout();
     setLayout(layout);
 
-    const auto installDir = QDir(QDir::homePath() + "/.minecraft/modsyncprofile");
-    std::cout << installDir.filesystemAbsolutePath().string() << '\n';
-
-    if (!installDir.exists())
+    if (!SyncClient::installDirExists())
     {
         auto* welcome = new QLabel("Modsync is a platform distributed by your server owner"
                              " to steamline the <b>install and updating</b> of mods."
@@ -30,28 +26,33 @@ WelcomePage::WelcomePage(QWidget *parent)
         layout->addWidget(welcome);
     } else
     {
-        auto* welcome = new QLabel("It seems you already have an instance of Modsync installed."
+        setButtonText(QWizard::WizardButton::NextButton, "Update >");
+        auto* welcome = new QLabel("It seems you <b>already have an instance</b> of Modsync installed."
                                  " Pressing next will update your mods.");
         welcome->setWordWrap(true);
         welcome->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
+        auto* actionBar = new QWidget;
+        auto* actionBarLayout = new QHBoxLayout;
+        actionBar->setLayout(actionBarLayout);
+
         auto* removeButton = new QPushButton("Remove Current Instance");
         connect(removeButton, &QPushButton::pressed, this, []()
         {
-            QDir dir(QDir::homePath() + "/.minecraft/modsyncprofile");
-            dir.removeRecursively();
+            SyncClient::removeInstallDir();
         });
 
         auto* browseButton = new QPushButton("Browse...");
         connect(browseButton, &QPushButton::pressed, this, []()
         {
-            QString dir(QDir::homePath() + "/.minecraft/modsyncprofile");
-            QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
+            QDesktopServices::openUrl(QUrl::fromLocalFile(SyncClient::INSTALLDIR));
         });
 
+        actionBarLayout->addWidget(removeButton);
+        actionBarLayout->addWidget(browseButton);
+
         layout->addWidget(welcome);
-        layout->addWidget(removeButton);
-        layout->addWidget(browseButton);
+        layout->addWidget(actionBar);
     }
 
 

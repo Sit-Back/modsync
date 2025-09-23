@@ -11,6 +11,21 @@ int SyncClient::getDownloadsTotal() const {return downloadTotal;}
 
 int SyncClient::getDownloadsFinished() const {return finishedDownloads;}
 
+bool SyncClient::createProfileDir()
+{
+    return QDir().mkpath(INSTALLDIR + "/mods");
+}
+
+bool SyncClient::installDirExists()
+{
+    return QDir(SyncClient::INSTALLDIR).exists();
+}
+
+bool SyncClient::removeInstallDir()
+{
+    return QDir(INSTALLDIR).removeRecursively();
+}
+
 
 void SyncClient::download(const QUrl& url)
 {

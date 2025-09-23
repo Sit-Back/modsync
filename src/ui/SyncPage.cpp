@@ -25,6 +25,7 @@ SyncPage::SyncPage(QWidget *parent)
 void SyncPage::initializePage()
 {
     sync();
+    SyncClient::createProfileDir();
 }
 
 bool SyncPage::isComplete() const

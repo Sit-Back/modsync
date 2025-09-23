@@ -3,7 +3,6 @@
 #include <QMainWindow>
 #include <QProgressBar>
 #include <QWizardPage>
-
 #include "../SyncClient.h"
 
 class SyncPage final : public QWizardPage
