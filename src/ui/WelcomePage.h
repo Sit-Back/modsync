@@ -8,6 +8,6 @@ class WelcomePage final : public QWizardPage
     Q_OBJECT
 
 public:
-    WelcomePage(QWidget *parent = nullptr);
+    explicit WelcomePage(QWidget *parent = nullptr);
 };
 

@@ -27,7 +27,7 @@ void SyncClient::download(const QUrl& url)
         file->close();
         reply->deleteLater();
         finishedDownloads++;
-        emit this->downloadFinished();
+        emit this->requestFinished();
     });
     QObject::connect(reply, &QNetworkReply::readyRead, [reply, file](){
         file->write(reply->readAll());

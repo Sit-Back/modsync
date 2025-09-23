@@ -11,7 +11,8 @@ SyncPage::SyncPage(QWidget *parent)
     auto* layout = new QVBoxLayout();
     setLayout(layout);
 
-    auto* downloadingLabel = new QLabel("Downloading...");
+    auto* downloadingLabel = new QLabel("Starting to sync, progress to the next"
+                                        " page once syncing has completed to complete install if you haven't already");
     downloadingLabel->setWordWrap(true);
     downloadingLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
@@ -35,16 +36,16 @@ bool SyncPage::isComplete() const
 void SyncPage::sync()
 {
     downloadProgressBar->setMaximum(syncClient.getDownloadsTotal());
-    connect(&syncClient, &SyncClient::downloadFinished, this, [this]() {
+    connect(&syncClient, &SyncClient::requestFinished, this, [this]() {
         downloadProgressBar->setValue(syncClient.getDownloadsFinished());
         emit completeChanged();
     });
 
 
-    auto url3 = QUrl("https://videos.pexels.com/video-files/1409899/1409899-uhd_3840_2160_25fps.mp4");
+    const auto url3 = QUrl("https://videos.pexels.com/video-files/1409899/1409899-uhd_3840_2160_25fps.mp4");
     syncClient.download(url3);
 
-    auto url2 = QUrl("https://videos.pexels.com/video-files/1409899/1409899-hd_1920_1080_25fps.mp4");
+    const auto url2 = QUrl("https://videos.pexels.com/video-files/1409899/1409899-hd_1920_1080_25fps.mp4");
     syncClient.download(url2);
 
 }

@@ -18,5 +18,5 @@ private:
     int finishedDownloads = 0;
 
 signals:
-    void downloadFinished();
+    void requestFinished();
 };
