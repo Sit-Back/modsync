@@ -18,14 +18,12 @@ qt_add_executable(modsync
         src/ui/SyncPage.h
         src/Downloader.cpp
         src/Downloader.h
-        src/Downloader.cpp
-        src/Downloader.h
 )
 
 target_link_libraries(modsync
     PRIVATE
-        Qt::Core
-        Qt::Widgets
+        Qt6::Core
+        Qt6::Widgets
         Qt6::Network
 )
 

@@ -8,9 +8,20 @@
 #include "MainWizard.h"
 #include "SyncPage.h"
 
-WelcomePage::WelcomePage(QWidget *parent)
+bool WelcomePage::isComplete() const
+{
+    return fetchingFinished;
+}
+
+WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
     : QWizardPage(parent)
 {
+    connect(&syncer, &SyncClient::fetchedMetadata, this, [this]()
+    {
+        fetchingFinished = true;
+        emit completeChanged();
+    });
+
     setTitle("Welcome to Modsync!");
     auto* layout = new QVBoxLayout();
     setLayout(layout);

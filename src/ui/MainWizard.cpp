@@ -4,12 +4,18 @@
 #include <QVBoxLayout>
 #include "SyncPage.h"
 #include "WelcomePage.h"
-#include <cassert>
+#include <qcoreapplication.h>
+#include <QMessageBox>
 
 MainWizard::MainWizard()
 {
-
-    QWizardPage* welcome = new WelcomePage();
+    syncer.fetchMetadata();
+    connect(&syncer, &SyncClient::fetchError, this, [](const QString& msg)
+    {
+        QMessageBox::critical(nullptr,"Error!", msg);
+        QCoreApplication::exit();
+    });
+    QWizardPage* welcome = new WelcomePage(syncer);
     QWizardPage* sync = new SyncPage(syncer);
     setOptions(QWizard::NoBackButtonOnLastPage | QWizard::NoCancelButtonOnLastPage);
 

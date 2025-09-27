@@ -19,6 +19,6 @@ private:
     void initializePage() override;
     bool isComplete() const override;
     QProgressBar* downloadProgressBar;
-    void sync();
+    void sync(std::vector<QUrl> urls);
 };
 

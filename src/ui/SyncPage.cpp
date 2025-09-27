@@ -22,8 +22,20 @@ SyncPage::SyncPage(SyncClient& syncer, QWidget *parent)
 
 void SyncPage::initializePage()
 {
+    std::vector<QUrl> modUrls;
+    auto modnames = syncer.getModNames();
+    if (modnames)
+    {
+        for (QString modName : *modnames)
+        {
+            QUrl modUrl = SyncClient::ROOTURL;
+            modUrl.setPath("/mods/" + modName);
+            modUrls.push_back(modUrl);
+        }
+    }
+
     SyncClient::createProfileDir();
-    sync();
+    sync(modUrls);
 }
 
 bool SyncPage::isComplete() const
@@ -32,15 +44,10 @@ bool SyncPage::isComplete() const
 }
 
 
-void SyncPage::sync()
+void SyncPage::sync(std::vector<QUrl> urls)
 {
     auto* downloader = new Downloader(
-        std::filesystem::path(syncer.INSTALLDIR.toStdString()),
-        std::vector<QUrl>{
-            QUrl("https://videos.pexels.com/video-files/1409899/1409899-uhd_3840_2160_25fps.mp4"),
-            QUrl("https://videos.pexels.com/video-files/1409899/1409899-hd_1920_1080_25fps.mp4")
-        }
-        );
+        std::filesystem::path(syncer.INSTALLDIR.toStdString()), urls);
     downloadProgressBar->setMaximum(static_cast<int>(downloader->getDownloadsTotal()));
     connect(downloader, &Downloader::downloadFinished, this, [this, downloader]() {
         downloadProgressBar->setValue(static_cast<int>(downloader->getDownloadsFinished()));
