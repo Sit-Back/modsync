@@ -4,12 +4,10 @@
 
 SyncClient::SyncClient()
 {
-    manager = new QNetworkAccessManager();
+    networkManager = new QNetworkAccessManager();
+    downloadTotal = 2;
+    finishedDownloads = 0;
 }
-
-int SyncClient::getDownloadsTotal() const {return downloadTotal;}
-
-int SyncClient::getDownloadsFinished() const {return finishedDownloads;}
 
 bool SyncClient::createProfileDir()
 {
@@ -26,25 +24,3 @@ bool SyncClient::removeInstallDir()
     return QDir(INSTALLDIR).removeRecursively();
 }
 
-
-void SyncClient::download(const QUrl& url)
-{
-    auto* request = new QNetworkRequest(url);
-    QNetworkReply* reply = manager->get(*request);
-
-    auto *file = new QFile(url.fileName());
-    file->open(QIODevice::WriteOnly);
-
-    bool renamed = false;
-
-    QObject::connect(reply, &QNetworkReply::finished, [reply, file, this]()
-    {
-        file->close();
-        reply->deleteLater();
-        finishedDownloads++;
-        emit this->requestFinished();
-    });
-    QObject::connect(reply, &QNetworkReply::readyRead, [reply, file](){
-        file->write(reply->readAll());
-    });
-}

@@ -10,18 +10,15 @@ class SyncClient final : public QObject
 public:
     inline static const QString INSTALLDIR = QString(QDir::homePath() + "/.minecraft/modsyncprofile");
     explicit SyncClient();
-    void download(const QUrl& url);
     static bool createProfileDir();
     static bool installDirExists();
     static bool removeInstallDir();
-    int getDownloadsTotal() const;
-    int getDownloadsFinished() const;
 
 private:
-    QNetworkAccessManager* manager;
-    int downloadTotal = 2;
-    int finishedDownloads = 0;
+    QNetworkAccessManager* networkManager;
+    int downloadTotal;
+    int finishedDownloads;
 
 signals:
-    void requestFinished();
+    void downloadFinished();
 };

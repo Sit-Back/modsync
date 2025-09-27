@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 #include "SyncPage.h"
 #include "WelcomePage.h"
+#include <cassert>
 
 MainWizard::MainWizard()
 {

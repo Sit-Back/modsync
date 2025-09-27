@@ -28,7 +28,7 @@ WelcomePage::WelcomePage(QWidget *parent)
     {
         setButtonText(QWizard::WizardButton::NextButton, "Update >");
         auto* welcome = new QLabel("It seems you <b>already have an instance</b> of Modsync installed."
-                                 " Pressing next will update your mods.");
+                                 " If you with to update, continue to the next page.");
         welcome->setWordWrap(true);
         welcome->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 

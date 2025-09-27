@@ -24,8 +24,8 @@ SyncPage::SyncPage(QWidget *parent)
 
 void SyncPage::initializePage()
 {
-    sync();
     SyncClient::createProfileDir();
+    sync();
 }
 
 bool SyncPage::isComplete() const
@@ -37,7 +37,7 @@ bool SyncPage::isComplete() const
 void SyncPage::sync()
 {
     downloadProgressBar->setMaximum(syncClient.getDownloadsTotal());
-    connect(&syncClient, &SyncClient::requestFinished, this, [this]() {
+    connect(&syncClient, &SyncClient::downloadFinished, this, [this]() {
         downloadProgressBar->setValue(syncClient.getDownloadsFinished());
         emit completeChanged();
     });
