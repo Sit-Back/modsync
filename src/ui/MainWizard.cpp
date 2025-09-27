@@ -8,8 +8,9 @@
 
 MainWizard::MainWizard()
 {
+
     QWizardPage* welcome = new WelcomePage();
-    QWizardPage* sync = new SyncPage();
+    QWizardPage* sync = new SyncPage(syncer);
     setOptions(QWizard::NoBackButtonOnLastPage | QWizard::NoCancelButtonOnLastPage);
 
     addPage(welcome);

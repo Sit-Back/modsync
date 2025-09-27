@@ -5,8 +5,6 @@
 SyncClient::SyncClient()
 {
     networkManager = new QNetworkAccessManager();
-    downloadTotal = 2;
-    finishedDownloads = 0;
 }
 
 bool SyncClient::createProfileDir()

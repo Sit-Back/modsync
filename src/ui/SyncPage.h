@@ -3,6 +3,8 @@
 #include <QMainWindow>
 #include <QProgressBar>
 #include <QWizardPage>
+
+#include "../Downloader.h"
 #include "../SyncClient.h"
 
 class SyncPage final : public QWizardPage
@@ -10,9 +12,10 @@ class SyncPage final : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit SyncPage(QWidget *parent = nullptr);
+    explicit SyncPage(SyncClient& syncer, QWidget *parent = nullptr);
 private:
-    SyncClient syncClient;
+    SyncClient& syncer;
+    bool downloadsComplete = false;
     void initializePage() override;
     bool isComplete() const override;
     QProgressBar* downloadProgressBar;

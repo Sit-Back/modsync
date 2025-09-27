@@ -16,9 +16,4 @@ public:
 
 private:
     QNetworkAccessManager* networkManager;
-    int downloadTotal;
-    int finishedDownloads;
-
-signals:
-    void downloadFinished();
 };
