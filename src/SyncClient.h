@@ -7,6 +7,13 @@ class SyncClient final : public QObject
 {
     Q_OBJECT
 
+    struct syncMetadata
+    {
+        std::string loaderID;
+        std::string loaderURL;
+        std::string loaderName;
+    };
+
 public:
     inline static const QString INSTALLDIR = QString(QDir::homePath() + "/.minecraft/modsyncprofile");
     explicit SyncClient();
@@ -16,4 +23,8 @@ public:
 
 private:
     QNetworkAccessManager* networkManager;
+
+signals:
+    void fetchedMetadata();
+
 };
