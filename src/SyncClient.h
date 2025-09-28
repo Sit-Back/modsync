@@ -8,6 +8,7 @@ class SyncClient final : public QObject
     Q_OBJECT
 
 public:
+    //Structs
     struct SyncMetadata
     {
         QString loaderID;
@@ -15,8 +16,8 @@ public:
         QString loaderName;
     };
 
+    //Constants
     inline static const auto INSTALLDIR = QString(QDir::homePath() + "/.minecraft/modsyncprofile");
-
     inline static const QUrl ROOTURL = []
     {
         QUrl tmp("http://localhost");
@@ -24,22 +25,30 @@ public:
         return tmp;
     }();
 
+    //Constructor
     explicit SyncClient();
+
+    //Profile Directory Operations
     static bool createProfileDir();
     static bool installDirExists();
     static bool removeInstallDir();
+
+    //Server Query Related
     void fetchMetadata();
-    std::optional<SyncMetadata> getMetadata() const;
-    std::optional<std::vector<QString>> getModNames() const;
+    void prepSync();
+    [[nodiscard]] std::optional<SyncMetadata> getMetadata() const;
+    [[nodiscard]] std::optional<std::vector<QString>> getModNames() const;
 
 private:
     QNetworkAccessManager *networkManager;
+
+    // From Server
     QString loaderID;
     QString loaderURL;
     QString loaderName;
     std::vector<QString> modnames;
 
 signals:
-    void fetchedMetadata();
+    void fetchFinished();
     void fetchError(const QString& msg);
 };

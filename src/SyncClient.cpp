@@ -21,6 +21,12 @@ bool SyncClient::removeInstallDir()
     return QDir(INSTALLDIR).removeRecursively();
 }
 
+void SyncClient::prepSync()
+{
+
+
+}
+
 void SyncClient::fetchMetadata()
 {
     QUrl metadataURL = ROOTURL;
@@ -42,10 +48,10 @@ void SyncClient::fetchMetadata()
                 modnames.emplace_back(reply->readLine().trimmed());
             }
 
-            fetchedMetadata();
+            emit fetchFinished();
         } else
         {
-            fetchError(reply->errorString());
+            emit fetchError(reply->errorString());
         }
     });
 

@@ -28,6 +28,7 @@ void FinishingUpPage::initializePage()
             " clicking the button)."
         );
         usage->setWordWrap(true);
+        usage->setOpenExternalLinks(true);
         layout()->addWidget(usage);
     }
 }
