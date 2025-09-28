@@ -93,20 +93,25 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
     // Calc Remove Needed
     for (QString filename : QDir(INSTALLDIR + "/mods/").entryList(QDir::Files | QDir::NoDotAndDotDot))
     {
-        bool filenameFound = false;
-        for (QString mod : mods)
+        if (filename.front() != QChar('!'))
         {
-            if (mod == filename)
+            bool filenameFound = false;
+            for (QString mod : mods)
             {
-                filenameFound = true;
-                break;
+
+                if (mod == filename)
+                {
+                    filenameFound = true;
+                    break;
+                }
+            }
+
+            if (filenameFound == false)
+            {
+                modnamesremove.push_back(filename);
             }
         }
 
-        if (filenameFound == false)
-        {
-            modnamesremove.push_back(filename);
-        }
     }
 }
 
