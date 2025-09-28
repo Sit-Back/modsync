@@ -71,8 +71,8 @@ std::optional<SyncClient::SyncMetadata> SyncClient::getMetadata() const
     return {
         SyncMetadata{
             loaderID,
-            loaderName,
-            loaderURL
+            loaderURL,
+            loaderName
         }
     };
 }

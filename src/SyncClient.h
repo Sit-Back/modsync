@@ -7,6 +7,7 @@ class SyncClient final : public QObject
 {
     Q_OBJECT
 
+public:
     struct SyncMetadata
     {
         QString loaderID;
@@ -14,7 +15,6 @@ class SyncClient final : public QObject
         QString loaderName;
     };
 
-public:
     inline static const auto INSTALLDIR = QString(QDir::homePath() + "/.minecraft/modsyncprofile");
 
     inline static const QUrl ROOTURL = []

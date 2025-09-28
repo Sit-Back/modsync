@@ -18,6 +18,8 @@ qt_add_executable(modsync
         src/ui/SyncPage.h
         src/Downloader.cpp
         src/Downloader.h
+        src/ui/FinishingUpPage.cpp
+        src/ui/FinishingUpPage.h
 )
 
 target_link_libraries(modsync

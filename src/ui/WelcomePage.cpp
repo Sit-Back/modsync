@@ -32,7 +32,6 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
                              " to steamline the <b>install and updating</b> of mods."
                              " Having trouble connecting? <b>Try re-running Modsync.</b>");
         welcome->setWordWrap(true);
-        welcome->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
         layout->addWidget(welcome);
     } else
@@ -41,7 +40,6 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
         auto* welcome = new QLabel("It seems you <b>already have an instance</b> of Modsync installed."
                                  " If you with to update, continue to the next page.");
         welcome->setWordWrap(true);
-        welcome->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
         auto* actionBar = new QWidget;
         auto* actionBarLayout = new QHBoxLayout;

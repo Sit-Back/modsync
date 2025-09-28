@@ -14,7 +14,6 @@ SyncPage::SyncPage(SyncClient& syncer, QWidget *parent)
     auto* downloadingLabel = new QLabel("Starting to sync, progress to the next"
         " page once syncing has completed to complete install if you haven't already");
     downloadingLabel->setWordWrap(true);
-    downloadingLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     layout->addWidget(downloadingLabel);
     downloadProgressBar = new QProgressBar();
     layout->addWidget(downloadProgressBar);

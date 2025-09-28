@@ -7,6 +7,8 @@
 #include <qcoreapplication.h>
 #include <QMessageBox>
 
+#include "FinishingUpPage.h"
+
 MainWizard::MainWizard()
 {
     syncer.fetchMetadata();
@@ -17,29 +19,14 @@ MainWizard::MainWizard()
     });
     QWizardPage* welcome = new WelcomePage(syncer);
     QWizardPage* sync = new SyncPage(syncer);
+    QWizardPage* finishing = new FinishingUpPage(syncer);
     setOptions(QWizard::NoBackButtonOnLastPage | QWizard::NoCancelButtonOnLastPage);
 
     addPage(welcome);
     addPage(sync);
-    addPage(createConclusionPage());
+    addPage(finishing);
     setWindowTitle("Modsync");
     show();
 }
 
-QWizardPage* MainWizard::createConclusionPage()
-{
-    auto* page = new QWizardPage();
-    page->setTitle("Done");
-
-    auto* layout = new QVBoxLayout();
-    page->setLayout(layout);
-
-    auto* usage = new QLabel("Modloader should be installed along with mods. Start the minecraft launcher to play.");
-    usage->setWordWrap(true);
-    usage->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-
-    layout->addWidget(usage);
-
-    return page;
-}
 
