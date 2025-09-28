@@ -55,10 +55,26 @@ std::optional<std::vector<QString>> SyncClient::getModNames() const
 {
     if (modnames.empty())
     {
-        return std::optional<std::vector<QString>>();
+        return {};
     }
 
-    return std::optional<std::vector<QString>>(modnames);
+    return {modnames};
+}
+
+std::optional<SyncClient::SyncMetadata> SyncClient::getMetadata() const
+{
+    if (loaderID.isEmpty() || loaderName.isEmpty() || loaderURL.isEmpty())
+    {
+        return {};
+    }
+
+    return {
+        SyncMetadata{
+            loaderID,
+            loaderName,
+            loaderURL
+        }
+    };
 }
 
 

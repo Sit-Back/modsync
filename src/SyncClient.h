@@ -7,7 +7,7 @@ class SyncClient final : public QObject
 {
     Q_OBJECT
 
-    struct syncMetadata
+    struct SyncMetadata
     {
         QString loaderID;
         QString loaderURL;
@@ -29,14 +29,14 @@ public:
     static bool installDirExists();
     static bool removeInstallDir();
     void fetchMetadata();
-    std::optional<syncMetadata> getMetadata() const;
+    std::optional<SyncMetadata> getMetadata() const;
     std::optional<std::vector<QString>> getModNames() const;
 
 private:
     QNetworkAccessManager *networkManager;
     QString loaderID;
-    std::string loaderURL;
-    std::string loaderName;
+    QString loaderURL;
+    QString loaderName;
     std::vector<QString> modnames;
 
 signals:
