@@ -22,15 +22,11 @@ SyncPage::SyncPage(SyncClient& syncer, QWidget *parent)
 void SyncPage::initializePage()
 {
     std::vector<QUrl> modUrls;
-    auto modnames = syncer.getModNames();
-    if (modnames)
+    for (const QString& modName : syncer.getModDownload())
     {
-        for (QString modName : *modnames)
-        {
-            QUrl modUrl = SyncClient::ROOTURL;
-            modUrl.setPath("/mods/" + modName);
-            modUrls.push_back(modUrl);
-        }
+        QUrl modUrl = SyncClient::ROOTURL;
+        modUrl.setPath("/mods/" + modName);
+        modUrls.push_back(modUrl);
     }
 
     SyncClient::createProfileDir();

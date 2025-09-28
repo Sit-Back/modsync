@@ -34,10 +34,10 @@ public:
     static bool removeInstallDir();
 
     //Server Query Related
-    void fetchMetadata();
     void prepSync();
-    [[nodiscard]] std::optional<SyncMetadata> getMetadata() const;
-    [[nodiscard]] std::optional<std::vector<QString>> getModNames() const;
+    [[nodiscard]] SyncMetadata getMetadata() const;
+    [[nodiscard]] std::vector<QString> getModDownload() const;
+    [[nodiscard]] std::vector<QString> getModRemove() const;
 
 private:
     QNetworkAccessManager *networkManager;
@@ -46,9 +46,11 @@ private:
     QString loaderID;
     QString loaderURL;
     QString loaderName;
-    std::vector<QString> modnames;
+    std::vector<QString> modnamestotal;
+    std::vector<QString> modnamesdownload;
+    std::vector<QString> modnamesremove;
 
 signals:
-    void fetchFinished();
+    void prepFinished();
     void fetchError(const QString& msg);
 };

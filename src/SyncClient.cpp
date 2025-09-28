@@ -23,12 +23,6 @@ bool SyncClient::removeInstallDir()
 
 void SyncClient::prepSync()
 {
-
-
-}
-
-void SyncClient::fetchMetadata()
-{
     QUrl metadataURL = ROOTURL;
     metadataURL.setPath("/meta");
     auto request = QNetworkRequest(metadataURL);
@@ -45,10 +39,12 @@ void SyncClient::fetchMetadata()
 
             while (!reply->atEnd())
             {
-                modnames.emplace_back(reply->readLine().trimmed());
+                modnamestotal.emplace_back(reply->readLine().trimmed());
             }
 
-            emit fetchFinished();
+            reply->deleteLater();
+
+            emit prepFinished();
         } else
         {
             emit fetchError(reply->errorString());
@@ -57,29 +53,27 @@ void SyncClient::fetchMetadata()
 
 }
 
-std::optional<std::vector<QString>> SyncClient::getModNames() const
+std::vector<QString> SyncClient::getModDownload() const
 {
-    if (modnames.empty())
+    if (modnamestotal.empty())
     {
-        return {};
+        throw std::runtime_error("Data has not been prepped yet.");
     }
 
-    return {modnames};
+    return {modnamestotal};
 }
 
-std::optional<SyncClient::SyncMetadata> SyncClient::getMetadata() const
+SyncClient::SyncMetadata SyncClient::getMetadata() const
 {
     if (loaderID.isEmpty() || loaderName.isEmpty() || loaderURL.isEmpty())
     {
-        return {};
+        throw std::runtime_error("Data has not been prepped yet.");
     }
 
     return {
-        SyncMetadata{
-            loaderID,
-            loaderURL,
-            loaderName
-        }
+        loaderID,
+        loaderURL,
+        loaderName
     };
 }
 

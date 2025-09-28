@@ -16,7 +16,7 @@ bool WelcomePage::isComplete() const
 WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
     : QWizardPage(parent)
 {
-    connect(&syncer, &SyncClient::fetchFinished, this, [this]()
+    connect(&syncer, &SyncClient::prepFinished, this, [this]()
     {
         fetchingFinished = true;
         emit completeChanged();

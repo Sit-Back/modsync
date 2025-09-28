@@ -11,7 +11,7 @@
 
 MainWizard::MainWizard()
 {
-    syncer.fetchMetadata();
+    syncer.prepSync();
     connect(&syncer, &SyncClient::fetchError, this, [](const QString& msg)
     {
         QMessageBox::critical(nullptr,"Error!", msg);
