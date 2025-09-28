@@ -41,16 +41,29 @@ bool SyncPage::isComplete() const
 
 void SyncPage::sync(std::vector<QUrl> urls)
 {
-    auto* downloader = new Downloader(
-        std::filesystem::path(syncer.INSTALLDIR.toStdString()), urls);
-    downloadProgressBar->setMaximum(static_cast<int>(downloader->getDownloadsTotal()));
-    connect(downloader, &Downloader::downloadFinished, this, [this, downloader]() {
-        downloadProgressBar->setValue(static_cast<int>(downloader->getDownloadsFinished()));
+    syncer.removeExtras();
+    if (!urls.empty())
+    {
+        auto* downloader = new Downloader(
+        std::filesystem::path(SyncClient::INSTALLDIR.toStdString()), urls);
 
-        if (downloader->getDownloadsFinished() >= downloader->getDownloadsTotal())
-        {
-            downloadsComplete = true;
-            emit completeChanged();
-        }
-    });
+        downloadProgressBar->setMaximum(static_cast<int>(downloader->getDownloadsTotal()));
+
+        connect(downloader, &Downloader::downloadFinished, this, [this, downloader]() {
+            downloadProgressBar->setValue(static_cast<int>(downloader->getDownloadsFinished()));
+
+            if (downloader->getDownloadsFinished() >= downloader->getDownloadsTotal())
+            {
+                downloadsComplete = true;
+                emit completeChanged();
+            }
+        });
+    } else
+    {
+        downloadProgressBar->setMaximum(1);
+        downloadProgressBar->setValue(1);
+        downloadsComplete=true;
+        emit completeChanged();
+    }
+
 }

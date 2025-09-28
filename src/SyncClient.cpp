@@ -21,6 +21,19 @@ bool SyncClient::removeInstallDir()
     return QDir(INSTALLDIR).removeRecursively();
 }
 
+void SyncClient::removeExtras() const
+{
+    if (needToSync)
+    {
+        throw std::runtime_error("Data has not been prepped yet.");
+    }
+
+    for (const QString& file : modnamesremove)
+    {
+        QFile(INSTALLDIR + "/mods/" + file).remove();
+    }
+}
+
 void SyncClient::prepSync()
 {
     QUrl metadataURL = ROOTURL;
@@ -37,13 +50,15 @@ void SyncClient::prepSync()
             loaderURL = reply->readLine().trimmed();
             loaderName = reply->readLine().trimmed();
 
+            std::vector<QString> mods;
             while (!reply->atEnd())
             {
-                modnamestotal.emplace_back(reply->readLine().trimmed());
+                mods.emplace_back(reply->readLine().trimmed());
             }
 
             reply->deleteLater();
-
+            calcSyncDiffs(mods);
+            needToSync = false;
             emit prepFinished();
         } else
         {
@@ -55,18 +70,51 @@ void SyncClient::prepSync()
 
 std::vector<QString> SyncClient::getModDownload() const
 {
-    if (modnamestotal.empty())
+    if (needToSync)
     {
         throw std::runtime_error("Data has not been prepped yet.");
     }
 
-    return {modnamestotal};
+    return {modnamesdownload};
+}
+
+void SyncClient::calcSyncDiffs(std::vector<QString> mods)
+{
+    // Calc Download Needed
+    for (QString filename : mods)
+    {
+        QFile file = QFile(INSTALLDIR + "/mods/" + filename);
+        if (!file.exists())
+        {
+            modnamesdownload.push_back(filename);
+        }
+    }
+
+    // Calc Remove Needed
+    for (QString filename : QDir(INSTALLDIR + "/mods/").entryList(QDir::Files | QDir::NoDotAndDotDot))
+    {
+        bool filenameFound = false;
+        for (QString mod : mods)
+        {
+            if (mod == filename)
+            {
+                filenameFound = true;
+                break;
+            }
+        }
+
+        if (filenameFound == false)
+        {
+            modnamesremove.push_back(filename);
+        }
+    }
 }
 
 SyncClient::SyncMetadata SyncClient::getMetadata() const
 {
-    if (loaderID.isEmpty() || loaderName.isEmpty() || loaderURL.isEmpty())
-    {
+    if (loaderID.isEmpty() || loaderName.isEmpty() || loaderURL.isEmpty()) {
+        throw std::runtime_error("Metadata is not complete");
+    } else if (needToSync) {
         throw std::runtime_error("Data has not been prepped yet.");
     }
 

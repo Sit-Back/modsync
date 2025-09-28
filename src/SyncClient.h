@@ -32,21 +32,22 @@ public:
     static bool createProfileDir();
     static bool installDirExists();
     static bool removeInstallDir();
+    void removeExtras() const;
 
     //Server Query Related
     void prepSync();
     [[nodiscard]] SyncMetadata getMetadata() const;
     [[nodiscard]] std::vector<QString> getModDownload() const;
-    [[nodiscard]] std::vector<QString> getModRemove() const;
 
 private:
+    void calcSyncDiffs(std::vector<QString> mods);
     QNetworkAccessManager *networkManager;
 
     // From Server
+    bool needToSync = true;
     QString loaderID;
     QString loaderURL;
     QString loaderName;
-    std::vector<QString> modnamestotal;
     std::vector<QString> modnamesdownload;
     std::vector<QString> modnamesremove;
 
