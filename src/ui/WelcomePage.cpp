@@ -29,16 +29,20 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
     if (!SyncClient::installDirExists())
     {
         auto* welcome = new QLabel("Modsync is a platform distributed by your server owner"
-                             " to steamline the <b>install and updating</b> of mods."
-                             " Having trouble connecting? <b>Try re-running Modsync.</b>");
+                             " to streamline the installation and updating of mods."
+                             " <br><br><b>Having trouble connecting to the Minecraft server?</b>"
+                             " Try re-running Modsync.");
         welcome->setWordWrap(true);
 
         layout->addWidget(welcome);
     } else
     {
         setButtonText(QWizard::WizardButton::NextButton, "Update >");
-        auto* welcome = new QLabel("It seems you <b>already have an instance</b> of Modsync installed."
-                                 " If you with to update, continue to the next page.");
+        auto* welcome = new QLabel("It seems you already have an instance of Modsync installed!"
+                                 " If you with to update, continue to the next page."
+                                 "<br><br>If you want to <b>add custom mods</b> that are excluded from syncing,"
+                                 " browser the profile using the button below and "
+                                 " add a '!' to the start of the file names of custom mods (e.g. !test.jar).");
         welcome->setWordWrap(true);
 
         auto* actionBar = new QWidget;
@@ -46,9 +50,12 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
         actionBar->setLayout(actionBarLayout);
 
         auto* removeButton = new QPushButton("Remove Current Instance");
-        connect(removeButton, &QPushButton::pressed, this, []()
+        connect(removeButton, &QPushButton::pressed, this, [&syncer, this]()
         {
             SyncClient::removeInstallDir();
+            fetchingFinished = false;
+            emit completeChanged();
+            syncer.prepSync();
         });
 
         auto* browseButton = new QPushButton("Browse...");

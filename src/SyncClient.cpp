@@ -80,6 +80,7 @@ std::vector<QString> SyncClient::getModDownload() const
 
 void SyncClient::calcSyncDiffs(std::vector<QString> mods)
 {
+    modnamesdownload = {};
     // Calc Download Needed
     for (QString filename : mods)
     {
@@ -91,6 +92,7 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
     }
 
     // Calc Remove Needed
+    modnamesremove = {};
     for (QString filename : QDir(INSTALLDIR + "/mods/").entryList(QDir::Files | QDir::NoDotAndDotDot))
     {
         if (filename.front() != QChar('!'))

@@ -8,6 +8,7 @@ SyncPage::SyncPage(SyncClient& syncer, QWidget *parent)
     : QWizardPage(parent), syncer(syncer)
 {
     setTitle("Welcome to Modsync!");
+
     auto* layout = new QVBoxLayout();
     setLayout(layout);
 
