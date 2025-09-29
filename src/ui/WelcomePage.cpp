@@ -8,6 +8,7 @@
 #include <QMessageBox>
 
 #include "MainWizard.h"
+#include "MainWizard.h"
 #include "SyncPage.h"
 
 bool WelcomePage::isComplete() const
