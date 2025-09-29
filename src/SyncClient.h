@@ -17,7 +17,9 @@ public:
     };
 
     //Constants
-    inline static const auto INSTALLDIR = QString(QDir::homePath() + "/.minecraft/modsyncprofile");
+    inline static const auto MINECRAFTDIR = QDir(QDir::homePath() + "/.minecraft");
+    inline static const auto PROFILEDIR = QDir(MINECRAFTDIR.path() + "/modsyncprofile");
+    inline static const auto MODSDIR = QDir(PROFILEDIR.path() + "/mods");
     inline static const QUrl ROOTURL = []
     {
         QUrl tmp("http://localhost");
@@ -32,7 +34,9 @@ public:
     static bool createProfileDir();
     static bool installDirExists();
     static bool removeInstallDir();
+    void addProfile() const;
     void removeExtras() const;
+
 
     //Server Query Related
     void prepSync();

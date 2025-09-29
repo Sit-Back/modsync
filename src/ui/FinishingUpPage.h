@@ -14,6 +14,5 @@ public:
 
 private:
     SyncClient& syncer;
-    QString profileString;
 };
 

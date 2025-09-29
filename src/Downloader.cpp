@@ -3,12 +3,14 @@
 #include <QNetworkReply>
 #include <utility>
 
+#include "SyncClient.h"
+
 unsigned long Downloader::getDownloadsTotal() const {return downloadTotal;}
 
 unsigned long Downloader::getDownloadsFinished() const {return finishedDownloads;}
 
-Downloader::Downloader(std::filesystem::path  path, const std::vector<QUrl>& urls) :
-downloadPath(std::move(path))
+Downloader::Downloader(QDir path, const std::vector<QUrl>& urls) :
+downloadPath(path)
 {
     manager = new QNetworkAccessManager();
     downloadTotal = urls.size();
@@ -25,8 +27,7 @@ void Downloader::download(const QUrl& url)
     auto* request = new QNetworkRequest(url);
     QNetworkReply* reply = manager->get(*request);
 
-    std::filesystem::path path(downloadPath.string() + "/mods/" + url.fileName().toStdString());
-    auto *file = new QFile(path);
+    auto *file = new QFile(downloadPath.filePath(url.fileName()));
     file->open(QIODevice::WriteOnly);
 
     bool renamed = false;

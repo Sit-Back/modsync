@@ -1,6 +1,8 @@
 #include "FinishingUpPage.h"
 
 #include <QLabel>
+#include <QMessageBox>
+#include <QPushButton>
 #include <QVBoxLayout>
 
 #include "../SyncClient.h"
@@ -17,18 +19,6 @@ void FinishingUpPage::initializePage()
 {
     SyncClient::SyncMetadata metadata = syncer.getMetadata();
 
-    profileString = R"({
-        "modsync": {
-            "lastUsed": "1970-01-02T00:00:00.000Z",
-            "lastVersionId": "%1",
-            "created": "1970-01-02T00:00:00.000Z",
-            "name": "fabric-loader-1.21.8",
-            "icon": "Dirt",
-            "type": "custom"
-        }
-    })";
-    profileString = profileString.arg(metadata.loaderID);
-
     auto* usage = new QLabel(
         "Your server owner has recommended that you download"
         " the <b>" + metadata.loaderName + "</b>"
@@ -40,6 +30,17 @@ void FinishingUpPage::initializePage()
     usage->setWordWrap(true);
     usage->setOpenExternalLinks(true);
     layout()->addWidget(usage);
+
+    auto* addProfileButton = new QPushButton("Add Profile To Launcher");
+    layout()->addWidget(addProfileButton);
+
+    connect(addProfileButton, &QPushButton::pressed, this, [this]()
+    {
+        syncer.addProfile();
+        QMessageBox::information(nullptr, "Added Launcher Profile", "Finished adding profile"
+                                                           " to launcher, you can now start the "
+                                                           "Minecraft Launcher to play!");
+    });
 }
 
 

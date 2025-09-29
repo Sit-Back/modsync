@@ -45,8 +45,7 @@ void SyncPage::sync(std::vector<QUrl> urls)
     syncer.removeExtras();
     if (!urls.empty())
     {
-        auto* downloader = new Downloader(
-        std::filesystem::path(SyncClient::INSTALLDIR.toStdString()), urls);
+        auto* downloader = new Downloader(SyncClient::MODSDIR.path(), urls);
 
         downloadProgressBar->setMaximum(static_cast<int>(downloader->getDownloadsTotal()));
 

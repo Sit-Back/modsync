@@ -5,6 +5,8 @@
 #include <QDir>
 #include <QPushButton>
 #include <QDesktopServices>
+#include <QMessageBox>
+
 #include "MainWizard.h"
 #include "SyncPage.h"
 
@@ -56,12 +58,13 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
             fetchingFinished = false;
             emit completeChanged();
             syncer.prepSync();
+            QMessageBox::information(nullptr, "Removed Profile", "Finished removing profile.");
         });
 
         auto* browseButton = new QPushButton("Browse...");
         connect(browseButton, &QPushButton::pressed, this, []()
         {
-            QDesktopServices::openUrl(QUrl::fromLocalFile(SyncClient::INSTALLDIR));
+            QDesktopServices::openUrl(QUrl::fromLocalFile(SyncClient::PROFILEDIR.path()));
         });
 
         actionBarLayout->addWidget(removeButton);

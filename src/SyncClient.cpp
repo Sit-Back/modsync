@@ -1,6 +1,7 @@
 #include "SyncClient.h"
 #include <QNetworkReply>
 #include <QMessageBox>
+#include <QDebug>
 
 SyncClient::SyncClient() {
     networkManager = new QNetworkAccessManager();
@@ -8,17 +9,17 @@ SyncClient::SyncClient() {
 
 bool SyncClient::createProfileDir()
 {
-    return QDir().mkpath(INSTALLDIR + "/mods");
+    return QDir().mkpath(MODSDIR.path());
 }
 
 bool SyncClient::installDirExists()
 {
-    return QDir(SyncClient::INSTALLDIR).exists();
+    return SyncClient::PROFILEDIR.exists();
 }
 
 bool SyncClient::removeInstallDir()
 {
-    return QDir(INSTALLDIR).removeRecursively();
+    return QDir(PROFILEDIR).removeRecursively();
 }
 
 void SyncClient::removeExtras() const
@@ -30,8 +31,47 @@ void SyncClient::removeExtras() const
 
     for (const QString& file : modnamesremove)
     {
-        QFile(INSTALLDIR + "/mods/" + file).remove();
+        QFile(MODSDIR.path() + file).remove();
     }
+}
+
+void SyncClient::addProfile() const
+{
+    QString profileString = R"(
+    "modsync": {
+      "lastUsed": "1970-01-02T00:00:00.000Z",
+      "lastVersionId": "%1",
+      "created": "1970-01-02T00:00:00.000Z",
+      "gameDir" : "%2",
+      "name": "Modsync",
+      "icon": "Dirt",
+      "type": "custom"
+    },)";
+    profileString = profileString.arg(loaderID).arg(PROFILEDIR.path());
+
+    auto profiles = QFile(MINECRAFTDIR.filePath("launcher_profiles.json"));
+    if (profiles.open(QIODevice::ReadOnly))
+    {
+        QString data = profiles.readAll();
+        std::string searchString = "\"profiles\" : {";
+        std::size_t pos = data.toStdString().find(searchString) + searchString.size();
+        data.insert(pos, profileString);
+        profiles.close();
+        if (profiles.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            profiles.write(data.toUtf8());
+            profiles.close();
+        } else
+        {
+            qDebug() << "Cannot write to launcher_profiles.json!";
+        }
+
+    } else
+    {
+
+    }
+
+
 }
 
 void SyncClient::prepSync()
@@ -84,7 +124,7 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
     // Calc Download Needed
     for (QString filename : mods)
     {
-        QFile file = QFile(INSTALLDIR + "/mods/" + filename);
+        QFile file = QFile(MODSDIR.path() + filename);
         if (!file.exists())
         {
             modnamesdownload.push_back(filename);
@@ -93,7 +133,7 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
 
     // Calc Remove Needed
     modnamesremove = {};
-    for (QString filename : QDir(INSTALLDIR + "/mods/").entryList(QDir::Files | QDir::NoDotAndDotDot))
+    for (QString filename : MODSDIR.entryList(QDir::Files | QDir::NoDotAndDotDot))
     {
         if (filename.front() != QChar('!'))
         {
