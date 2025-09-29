@@ -14,5 +14,8 @@ bool fetchingFinished = false;
 public:
     bool isComplete() const override;
     explicit WelcomePage(SyncClient& syncer, QWidget *parent = nullptr);
+
+private:
+    QPushButton* removeButton;
 };
 

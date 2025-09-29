@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QPushButton>
 #include <QWizardPage>
 #include "../SyncClient.h"
 
@@ -14,5 +15,6 @@ public:
 
 private:
     SyncClient& syncer;
+    QPushButton* addProfileButton;
 };
 

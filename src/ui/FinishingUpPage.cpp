@@ -31,7 +31,7 @@ void FinishingUpPage::initializePage()
     usage->setOpenExternalLinks(true);
     layout()->addWidget(usage);
 
-    auto* addProfileButton = new QPushButton("Add Profile To Launcher");
+    addProfileButton = new QPushButton("Add Profile To Launcher");
     layout()->addWidget(addProfileButton);
 
     connect(addProfileButton, &QPushButton::pressed, this, [this]()
@@ -40,6 +40,7 @@ void FinishingUpPage::initializePage()
         QMessageBox::information(nullptr, "Added Launcher Profile", "Finished adding profile"
                                                            " to launcher, you can now start the "
                                                            "Minecraft Launcher to play!");
+        addProfileButton->setDisabled(true);
     });
 }
 

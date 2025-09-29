@@ -51,7 +51,7 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
         auto* actionBarLayout = new QHBoxLayout;
         actionBar->setLayout(actionBarLayout);
 
-        auto* removeButton = new QPushButton("Remove Current Instance");
+        removeButton = new QPushButton("Remove Current Instance");
         connect(removeButton, &QPushButton::pressed, this, [&syncer, this]()
         {
             SyncClient::removeInstallDir();
@@ -59,6 +59,7 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
             emit completeChanged();
             syncer.prepSync();
             QMessageBox::information(nullptr, "Removed Profile", "Finished removing profile.");
+            removeButton->setDisabled(true);
         });
 
         auto* browseButton = new QPushButton("Browse...");
