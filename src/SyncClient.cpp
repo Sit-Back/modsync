@@ -2,6 +2,7 @@
 #include <QNetworkReply>
 #include <QMessageBox>
 #include <QDebug>
+#include <qregularexpression.h>
 
 SyncClient::SyncClient() {
     networkManager = new QNetworkAccessManager();
@@ -35,7 +36,7 @@ void SyncClient::removeExtras() const
     }
 }
 
-void SyncClient::addProfile() const
+bool SyncClient::addProfile() const
 {
     QString profileString = R"(
     "modsync": {
@@ -47,28 +48,46 @@ void SyncClient::addProfile() const
       "icon": "Dirt",
       "type": "custom"
     },)";
-    profileString = profileString.arg(loaderID).arg(PROFILEDIR.path());
+    profileString = profileString.arg(loaderID, PROFILEDIR.path());
+    static const QRegularExpression rs("\\s");
+    profileString.remove(rs);
 
     auto profiles = QFile(MINECRAFTDIR.filePath("launcher_profiles.json"));
+    if (!profiles.exists())
+    {
+        qCritical() << "launcher_profiles.json does not exist";
+        return false;
+    }
     if (profiles.open(QIODevice::ReadOnly))
     {
         QString data = profiles.readAll();
-        std::string searchString = "\"profiles\" : {";
-        std::size_t pos = data.toStdString().find(searchString) + searchString.size();
-        data.insert(pos, profileString);
+        data.remove(rs);
+        std::string searchString = "\"profiles\":{";
+        std::size_t pos = data.toStdString().find(searchString);
+
+        if (pos == std::string::npos)
+        {
+            qCritical() << "Corrupt launcher_profiles.json";
+            profiles.close();
+            return false;
+        }
+
+        data.insert(pos+searchString.size(), profileString);
         profiles.close();
         if (profiles.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
             profiles.write(data.toUtf8());
             profiles.close();
+            return true;
         } else
         {
-            qDebug() << "Cannot write to launcher_profiles.json!";
+            qCritical() << "Cannot write to launcher_profiles.json";
+            return false;
         }
-
     } else
     {
-
+        qCritical() << "Insufficient permissions to read from launcher_profiles.json";
+        return false;
     }
 
 
@@ -112,7 +131,7 @@ std::vector<QString> SyncClient::getModDownload() const
 {
     if (needToSync)
     {
-        throw std::runtime_error("Data has not been prepped yet.");
+        throw std::runtime_error("Data has not been prepped yet");
     }
 
     return {modnamesdownload};
@@ -152,8 +171,10 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
             {
                 modnamesremove.push_back(filename);
             }
+        } else
+        {
+            qInfo() << "Mod omitted due to '!' tag: " << filename;
         }
-
     }
 }
 

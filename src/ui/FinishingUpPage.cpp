@@ -36,11 +36,20 @@ void FinishingUpPage::initializePage()
 
     connect(addProfileButton, &QPushButton::pressed, this, [this]()
     {
-        syncer.addProfile();
-        QMessageBox::information(nullptr, "Added Launcher Profile", "Finished adding profile"
-                                                           " to launcher, you can now start the "
-                                                           "Minecraft Launcher to play!");
-        addProfileButton->setDisabled(true);
+        bool result = syncer.addProfile();
+        if (result)
+        {
+            QMessageBox::information(nullptr, "Added Launcher Profile",
+                "Finished adding profile to launcher, you can now start the "
+                "Minecraft Launcher to play!");
+            addProfileButton->setDisabled(true);
+        } else
+        {
+            QMessageBox::critical(nullptr, "Launcher Profile Add Failed",
+                "Could not add launcher profile! Ensure that the file"
+                " exists, is both readable and writable and is not corrupt.");
+        }
+
     });
 }
 

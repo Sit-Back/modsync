@@ -39,7 +39,7 @@ public:
     static bool createProfileDir();
     static bool installDirExists();
     static bool removeInstallDir();
-    void addProfile() const;
+    bool addProfile() const;
     void removeExtras() const;
 
 
