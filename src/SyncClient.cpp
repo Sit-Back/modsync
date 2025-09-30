@@ -38,7 +38,7 @@ void SyncClient::removeExtras() const
 
     for (const QString& file : modnamesremove)
     {
-        QFile(MODSDIR.path() + file).remove();
+        QFile(MODSDIR.path() + "/" + file).remove();
     }
 }
 
@@ -149,7 +149,7 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
     // Calc Download Needed
     for (QString filename : mods)
     {
-        QFile file = QFile(MODSDIR.path() + filename);
+        QFile file = QFile(MODSDIR.path() + "/" + filename);
         if (!file.exists())
         {
             modnamesdownload.push_back(filename);
