@@ -8,6 +8,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     SyncClient syncer;
 
+#ifdef _WIN32
+    QApplication::setStyle("windowsvista");
+#endif
+
     if (!SyncClient::minecraftDirExists())
     {
         QMessageBox::critical(nullptr, "Invalid Launcher",

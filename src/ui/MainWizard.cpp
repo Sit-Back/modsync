@@ -18,7 +18,7 @@ MainWizard::MainWizard(SyncClient& syncer) : syncer(syncer)
     QWizardPage* welcome = new WelcomePage(syncer);
     QWizardPage* sync = new SyncPage(syncer);
     QWizardPage* finishing = new FinishingUpPage(syncer);
-    setOptions(QWizard::NoBackButtonOnLastPage | QWizard::NoCancelButtonOnLastPage);
+    setOptions(QWizard::DisabledBackButtonOnLastPage | QWizard::NoCancelButtonOnLastPage);
 
     addPage(welcome);
     addPage(sync);
