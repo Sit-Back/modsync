@@ -1,5 +1,3 @@
-#include "ui/WelcomePage.h"
-
 #include <QApplication>
 #include <QMessageBox>
 
