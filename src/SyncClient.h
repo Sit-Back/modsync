@@ -25,9 +25,10 @@ public:
 
     inline static const auto PROFILEDIR = QDir(MINECRAFTDIR.path() + "/modsyncprofile");
     inline static const auto MODSDIR = QDir(PROFILEDIR.path() + "/mods");
+
     inline static const QUrl ROOTURL = []
     {
-        QUrl tmp("http://localhost");
+        QUrl tmp(SERVERURL);
         tmp.setPort(5000);
         return tmp;
     }();

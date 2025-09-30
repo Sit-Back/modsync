@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.19)
 project(modsync LANGUAGES CXX)
 
+if(NOT DEFINED ENV{SERVER_URL})
+    message(FATAL_ERROR "ENV SERVER_URL not set")
+endif()
+set(SERVERURL "$ENV{SERVER_URL}")
+
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
 
 qt_standard_project_setup()
@@ -28,6 +33,8 @@ target_link_libraries(modsync
         Qt6::Widgets
         Qt6::Network
 )
+
+target_compile_definitions(modsync PRIVATE SERVERURL="${SERVERURL}")
 
 include(GNUInstallDirs)
 
