@@ -40,7 +40,6 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
         layout->addWidget(welcome);
     } else
     {
-                setButtonText(QWizard::WizardButton::NextButton, "Update >");
         auto* welcome = new QLabel("It seems you already have an instance of Modsync installed!"
                                  " If you with to update, continue to the next page."
                                  "<br><br>If you want to <b>add custom mods</b> that are excluded from syncing,"
