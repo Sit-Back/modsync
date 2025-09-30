@@ -6,8 +6,7 @@
 class MainWizard final : public QWizard
 {
 public:
-    MainWizard();
+    MainWizard(SyncClient& syncer);
 private:
-    static QWizardPage* createConclusionPage();
-    SyncClient syncer;
+    SyncClient& syncer;
 };

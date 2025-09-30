@@ -18,6 +18,12 @@ bool SyncClient::installDirExists()
     return SyncClient::PROFILEDIR.exists();
 }
 
+bool SyncClient::minecraftDirExists()
+{
+    return SyncClient::MINECRAFTDIR.exists();
+}
+
+
 bool SyncClient::removeInstallDir()
 {
     return QDir(PROFILEDIR).removeRecursively();

@@ -38,6 +38,7 @@ public:
     //Profile Directory Operations
     static bool createProfileDir();
     static bool installDirExists();
+    static bool minecraftDirExists();
     static bool removeInstallDir();
     bool addProfile() const;
     void removeExtras() const;

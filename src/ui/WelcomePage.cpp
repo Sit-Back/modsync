@@ -1,13 +1,13 @@
 #include "WelcomePage.h"
+
+#include <QApplication>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QComboBox>
-#include <QDir>
 #include <QPushButton>
 #include <QDesktopServices>
 #include <QMessageBox>
 
-#include "MainWizard.h"
 #include "MainWizard.h"
 #include "SyncPage.h"
 
@@ -40,7 +40,7 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
         layout->addWidget(welcome);
     } else
     {
-        setButtonText(QWizard::WizardButton::NextButton, "Update >");
+                setButtonText(QWizard::WizardButton::NextButton, "Update >");
         auto* welcome = new QLabel("It seems you already have an instance of Modsync installed!"
                                  " If you with to update, continue to the next page."
                                  "<br><br>If you want to <b>add custom mods</b> that are excluded from syncing,"
@@ -75,6 +75,4 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
         layout->addWidget(welcome);
         layout->addWidget(actionBar);
     }
-
-
 }
