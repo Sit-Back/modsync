@@ -37,7 +37,7 @@ void SyncClient::removeExtras() const
         throw std::runtime_error("Data has not been prepped yet.");
     }
 
-    for (const QString& file : modnamesremove)
+    for (const QString& file : modNamesRemove)
     {
         QFile(MODSDIR.path() + "/" + file).remove();
     }
@@ -141,24 +141,24 @@ std::vector<QString> SyncClient::getModDownload() const
         throw std::runtime_error("Data has not been prepped yet");
     }
 
-    return {modnamesdownload};
+    return {modNamesDownload};
 }
 
 void SyncClient::calcSyncDiffs(std::vector<QString> mods)
 {
-    modnamesdownload = {};
+    modNamesDownload = {};
     // Calc Download Needed
     for (QString filename : mods)
     {
         QFile file = QFile(MODSDIR.path() + "/" + filename);
         if (!file.exists())
         {
-            modnamesdownload.push_back(filename);
+            modNamesDownload.push_back(filename);
         }
     }
 
     // Calc Remove Needed
-    modnamesremove = {};
+    modNamesRemove = {};
     for (QString filename : MODSDIR.entryList(QDir::Files | QDir::NoDotAndDotDot))
     {
         if (filename.front() != QChar('!'))
@@ -175,7 +175,7 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
 
             if (filenameFound == false)
             {
-                modnamesremove.push_back(filename);
+                modNamesRemove.push_back(filename);
             }
         }
         else

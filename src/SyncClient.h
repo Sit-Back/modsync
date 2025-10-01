@@ -1,6 +1,5 @@
 #pragma once
 #include <QDir>
-#include <string>
 #include <QNetworkAccessManager>
 
 class SyncClient final : public QObject
@@ -41,7 +40,7 @@ public:
     static bool installDirExists();
     static bool minecraftDirExists();
     static bool removeInstallDir();
-    bool addProfile() const;
+    [[nodiscard]] bool addProfile() const;
     void removeExtras() const;
 
 
@@ -59,8 +58,8 @@ private:
     QString loaderID;
     QString loaderURL;
     QString loaderName;
-    std::vector<QString> modnamesdownload;
-    std::vector<QString> modnamesremove;
+    std::vector<QString> modNamesDownload;
+    std::vector<QString> modNamesRemove;
 
 signals:
     void prepFinished();
