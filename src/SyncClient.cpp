@@ -4,7 +4,8 @@
 #include <QDebug>
 #include <qregularexpression.h>
 
-SyncClient::SyncClient() {
+SyncClient::SyncClient()
+{
     networkManager = new QNetworkAccessManager();
 }
 
@@ -78,25 +79,25 @@ bool SyncClient::addProfile() const
             return false;
         }
 
-        data.insert(pos+searchString.size(), profileString);
+        data.insert(pos + searchString.size(), profileString);
         profiles.close();
         if (profiles.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
             profiles.write(data.toUtf8());
             profiles.close();
             return true;
-        } else
+        }
+        else
         {
             qCritical() << "Cannot write to launcher_profiles.json";
             return false;
         }
-    } else
+    }
+    else
     {
         qCritical() << "Insufficient permissions to read from launcher_profiles.json";
         return false;
     }
-
-
 }
 
 void SyncClient::prepSync()
@@ -125,12 +126,12 @@ void SyncClient::prepSync()
             calcSyncDiffs(mods);
             needToSync = false;
             emit prepFinished();
-        } else
+        }
+        else
         {
             emit fetchError(reply->errorString());
         }
     });
-
 }
 
 std::vector<QString> SyncClient::getModDownload() const
@@ -165,7 +166,6 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
             bool filenameFound = false;
             for (QString mod : mods)
             {
-
                 if (mod == filename)
                 {
                     filenameFound = true;
@@ -177,7 +177,8 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
             {
                 modnamesremove.push_back(filename);
             }
-        } else
+        }
+        else
         {
             qInfo() << "Mod omitted due to '!' tag: " << filename;
         }
@@ -186,9 +187,12 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
 
 SyncClient::SyncMetadata SyncClient::getMetadata() const
 {
-    if (loaderID.isEmpty() || loaderName.isEmpty() || loaderURL.isEmpty()) {
+    if (loaderID.isEmpty() || loaderName.isEmpty() || loaderURL.isEmpty())
+    {
         throw std::runtime_error("Metadata is not complete");
-    } else if (needToSync) {
+    }
+    else if (needToSync)
+    {
         throw std::runtime_error("Data has not been prepped yet.");
     }
 
@@ -198,5 +202,3 @@ SyncClient::SyncMetadata SyncClient::getMetadata() const
         loaderName
     };
 }
-
-

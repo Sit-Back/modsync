@@ -52,7 +52,7 @@ public:
 
 private:
     void calcSyncDiffs(std::vector<QString> mods);
-    QNetworkAccessManager *networkManager;
+    QNetworkAccessManager* networkManager;
 
     // From Server
     bool needToSync = true;

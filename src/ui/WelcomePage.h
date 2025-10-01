@@ -9,13 +9,12 @@ class WelcomePage final : public QWizardPage
 {
     Q_OBJECT
 
-bool fetchingFinished = false;
+    bool fetchingFinished = false;
 
 public:
     bool isComplete() const override;
-    explicit WelcomePage(SyncClient& syncer, QWidget *parent = nullptr);
+    explicit WelcomePage(SyncClient& syncer, QWidget* parent = nullptr);
 
 private:
     QPushButton* removeButton;
 };
-

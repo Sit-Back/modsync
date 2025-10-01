@@ -19,6 +19,7 @@ private:
     int finishedDownloads;
     unsigned long downloadTotal;
 
-signals:
+    signals :
+    
     void downloadFinished();
 };

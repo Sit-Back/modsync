@@ -16,7 +16,7 @@ bool WelcomePage::isComplete() const
     return fetchingFinished;
 }
 
-WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
+WelcomePage::WelcomePage(SyncClient& syncer, QWidget* parent)
     : QWizardPage(parent)
 {
     connect(&syncer, &SyncClient::prepFinished, this, [this]()
@@ -32,19 +32,20 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget *parent)
     if (!SyncClient::installDirExists())
     {
         auto* welcome = new QLabel("Modsync is a platform distributed by your server owner"
-                             " to streamline the installation and updating of mods."
-                             " <br><br><b>Having trouble connecting to the Minecraft server?</b>"
-                             " Try re-running Modsync.");
+            " to streamline the installation and updating of mods."
+            " <br><br><b>Having trouble connecting to the Minecraft server?</b>"
+            " Try re-running Modsync.");
         welcome->setWordWrap(true);
 
         layout->addWidget(welcome);
-    } else
+    }
+    else
     {
         auto* welcome = new QLabel("It seems you already have an instance of Modsync installed!"
-                                 " If you with to update, continue to the next page."
-                                 "<br><br>If you want to <b>add custom mods</b> that are excluded from syncing,"
-                                 " browser the profile using the button below and "
-                                 " add a '!' to the start of the file names of custom mods (e.g. !test.jar).");
+            " If you with to update, continue to the next page."
+            "<br><br>If you want to <b>add custom mods</b> that are excluded from syncing,"
+            " browser the profile using the button below and "
+            " add a '!' to the start of the file names of custom mods (e.g. !test.jar).");
         welcome->setWordWrap(true);
 
         auto* actionBar = new QWidget;

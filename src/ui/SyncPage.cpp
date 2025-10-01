@@ -4,7 +4,7 @@
 #include <QComboBox>
 #include <QProgressBar>
 
-SyncPage::SyncPage(SyncClient& syncer, QWidget *parent)
+SyncPage::SyncPage(SyncClient& syncer, QWidget* parent)
     : QWizardPage(parent), syncer(syncer)
 {
     setTitle("Syncing...");
@@ -49,7 +49,8 @@ void SyncPage::sync(std::vector<QUrl> urls)
 
         downloadProgressBar->setMaximum(static_cast<int>(downloader->getDownloadsTotal()));
 
-        connect(downloader, &Downloader::downloadFinished, this, [this, downloader]() {
+        connect(downloader, &Downloader::downloadFinished, this, [this, downloader]()
+        {
             downloadProgressBar->setValue(static_cast<int>(downloader->getDownloadsFinished()));
 
             if (downloader->getDownloadsFinished() >= downloader->getDownloadsTotal())
@@ -58,12 +59,12 @@ void SyncPage::sync(std::vector<QUrl> urls)
                 emit completeChanged();
             }
         });
-    } else
+    }
+    else
     {
         downloadProgressBar->setMaximum(1);
         downloadProgressBar->setValue(1);
-        downloadsComplete=true;
+        downloadsComplete = true;
         emit completeChanged();
     }
-
 }

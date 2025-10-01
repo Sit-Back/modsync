@@ -12,7 +12,7 @@ MainWizard::MainWizard(SyncClient& syncer) : syncer(syncer)
     syncer.prepSync();
     connect(&syncer, &SyncClient::fetchError, this, [](const QString& msg)
     {
-        QMessageBox::critical(nullptr,"Error!", msg);
+        QMessageBox::critical(nullptr, "Error!", msg);
         QApplication::exit();
     });
     QWizardPage* welcome = new WelcomePage(syncer);

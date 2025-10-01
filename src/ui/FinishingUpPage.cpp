@@ -7,8 +7,8 @@
 
 #include "../SyncClient.h"
 
-FinishingUpPage::FinishingUpPage(SyncClient& syncer, QWidget *parent) :
-syncer(syncer)
+FinishingUpPage::FinishingUpPage(SyncClient& syncer, QWidget* parent) :
+    syncer(syncer)
 {
     setTitle("Done");
     auto* layout = new QVBoxLayout();
@@ -40,17 +40,15 @@ void FinishingUpPage::initializePage()
         if (result)
         {
             QMessageBox::information(nullptr, "Added Launcher Profile",
-                "Finished adding profile to launcher, you can now start the "
-                "Minecraft Launcher to play!");
+                                     "Finished adding profile to launcher, you can now start the "
+                                     "Minecraft Launcher to play!");
             addProfileButton->setDisabled(true);
-        } else
+        }
+        else
         {
             QMessageBox::critical(nullptr, "Launcher Profile Add Failed",
-                "Could not add launcher profile! Ensure that the file"
-                " exists, is both readable and writable and is not corrupt.");
+                                  "Could not add launcher profile! Ensure that the file"
+                                  " exists, is both readable and writable and is not corrupt.");
         }
-
     });
 }
-
-

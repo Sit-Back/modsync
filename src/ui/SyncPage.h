@@ -12,7 +12,8 @@ class SyncPage final : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit SyncPage(SyncClient& syncer, QWidget *parent = nullptr);
+    explicit SyncPage(SyncClient& syncer, QWidget* parent = nullptr);
+
 private:
     SyncClient& syncer;
     bool downloadsComplete = false;
@@ -21,4 +22,3 @@ private:
     QProgressBar* downloadProgressBar;
     void sync(std::vector<QUrl> urls);
 };
-

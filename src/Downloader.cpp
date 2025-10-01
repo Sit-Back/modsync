@@ -5,12 +5,12 @@
 
 #include "SyncClient.h"
 
-unsigned long Downloader::getDownloadsTotal() const {return downloadTotal;}
+unsigned long Downloader::getDownloadsTotal() const { return downloadTotal; }
 
-unsigned long Downloader::getDownloadsFinished() const {return finishedDownloads;}
+unsigned long Downloader::getDownloadsFinished() const { return finishedDownloads; }
 
 Downloader::Downloader(QDir path, const std::vector<QUrl>& urls) :
-downloadPath(path)
+    downloadPath(path)
 {
     manager = new QNetworkAccessManager();
     downloadTotal = urls.size();
@@ -27,7 +27,7 @@ void Downloader::download(const QUrl& url)
     auto* request = new QNetworkRequest(url);
     QNetworkReply* reply = manager->get(*request);
 
-    auto *file = new QFile(downloadPath.filePath(url.fileName()));
+    auto* file = new QFile(downloadPath.filePath(url.fileName()));
     file->open(QIODevice::WriteOnly);
 
     bool renamed = false;
@@ -43,7 +43,8 @@ void Downloader::download(const QUrl& url)
         assert(finishedDownloads <= downloadTotal);
         emit this->downloadFinished();
     });
-    QObject::connect(reply, &QNetworkReply::readyRead, [reply, file](){
+    QObject::connect(reply, &QNetworkReply::readyRead, [reply, file]()
+    {
         file->write(reply->readAll());
     });
 }
