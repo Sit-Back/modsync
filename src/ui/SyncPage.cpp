@@ -2,6 +2,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QComboBox>
+#include <QMessageBox>
 #include <QProgressBar>
 
 SyncPage::SyncPage(SyncClient& syncer, QWidget* parent)
@@ -42,7 +43,12 @@ bool SyncPage::isComplete() const
 
 void SyncPage::sync(std::vector<QUrl> urls)
 {
+    //1. Remove extra mods that arn't on server.
     syncer.removeExtras();
+
+    //2. Check if loader installed
+    //3. then download and install if needed.
+    //4. Download mods
     if (!urls.empty())
     {
         auto* downloader = new Downloader(SyncClient::MODSDIR.path(), urls);
@@ -66,5 +72,14 @@ void SyncPage::sync(std::vector<QUrl> urls)
         downloadProgressBar->setValue(1);
         downloadsComplete = true;
         emit completeChanged();
+    }
+
+    //5. Add profile to launcher
+    bool profileAddSuccess = syncer.addProfile();
+    if (!profileAddSuccess)
+    {
+        QMessageBox::critical(nullptr, "Launcher Profile Add Failed",
+                              "Could not add launcher profile! Ensure that the file"
+                              " exists, is both readable and writable and is not corrupt.");
     }
 }
