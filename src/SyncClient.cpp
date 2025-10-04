@@ -75,17 +75,37 @@ bool SyncClient::addProfile() const
     {
         QString data = profiles.readAll();
         data.remove(rs);
-        std::string searchString = "\"profiles\":{";
-        std::size_t pos = data.toStdString().find(searchString);
+        std::string modsyncFlag = "\"modsync\":{";
+        std::size_t modsyncFlagPos = data.toStdString().find(modsyncFlag);
 
-        if (pos == std::string::npos)
+        if (modsyncFlagPos != std::string::npos)
+        {
+            qInfo() << "Existing launcher profile found, attempting replace";
+
+            int finishOffset = 0;
+            for (int i = modsyncFlagPos; i < data.size(); i++)
+            {
+                finishOffset++;
+                if (data[i] == "}" )
+                {
+                    finishOffset++;
+                    break;
+                }
+            }
+            data.remove(modsyncFlagPos, finishOffset);
+        }
+
+        std::string profilesFlag = "\"profiles\":{";
+        std::size_t profilesFlagPos = data.toStdString().find(profilesFlag);
+
+        if (profilesFlagPos == std::string::npos)
         {
             qCritical() << "Corrupt launcher_profiles.json";
             profiles.close();
             return false;
         }
 
-        data.insert(pos + searchString.size(), profileString);
+        data.insert(profilesFlagPos + profilesFlag.size(), profileString);
         profiles.close();
         if (profiles.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
