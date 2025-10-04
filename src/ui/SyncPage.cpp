@@ -23,6 +23,7 @@ SyncPage::SyncPage(SyncClient& syncer, QWidget* parent)
 
 void SyncPage::initializePage()
 {
+    // Create list of mod URLs to pass to sync function
     std::vector<QUrl> modUrls;
     for (const QString& modName : syncer.getModDownload())
     {
@@ -31,6 +32,7 @@ void SyncPage::initializePage()
         modUrls.push_back(modUrl);
     }
 
+    //Create profile directory before syncing.
     SyncClient::createProfileDir();
     sync(modUrls);
 }

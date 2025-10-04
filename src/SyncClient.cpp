@@ -25,6 +25,17 @@ bool SyncClient::minecraftDirExists()
     return SyncClient::MINECRAFTDIR.exists();
 }
 
+bool SyncClient::versionExists(QString versionName)
+{
+    QDir versionsPath(MINECRAFTDIR);
+    versionsPath.cd("versions");
+    QStringList versions = versionsPath.entryList(QDir::Dirs);
+    return std::any_of(versions.begin(), versions.end(), [versionName](const QString& version)
+    {
+        return version == versionName;
+    });
+}
+
 bool SyncClient::removeInstallDir()
 {
     return QDir(PROFILEDIR).removeRecursively();
@@ -111,6 +122,7 @@ bool SyncClient::addProfile() const
         {
             profiles.write(data.toUtf8());
             profiles.close();
+            qInfo() << "Launcher profile added successfully";
             return true;
         }
         else
@@ -139,8 +151,12 @@ void SyncClient::prepSync()
         if (reply->error() == QNetworkReply::NoError)
         {
             loaderID = reply->readLine().trimmed();
-            loaderURL = reply->readLine().trimmed();
-            loaderName = reply->readLine().trimmed();
+            loaderCMD = reply->readLine().trimmed();
+
+            if (loaderID.isEmpty() || loaderCMD.isEmpty())
+            {
+                emit fetchError("Metadata is not complete, please contact server owner.");
+            }
 
             std::vector<QString> mods;
             while (!reply->atEnd())
@@ -213,18 +229,13 @@ void SyncClient::calcSyncDiffs(std::vector<QString> mods)
 
 SyncClient::SyncMetadata SyncClient::getMetadata() const
 {
-    if (loaderID.isEmpty() || loaderName.isEmpty() || loaderURL.isEmpty())
-    {
-        throw std::runtime_error("Metadata is not complete");
-    }
-    else if (needToSync)
+    if (needToSync)
     {
         throw std::runtime_error("Data has not been prepped yet.");
     }
 
     return {
         loaderID,
-        loaderURL,
-        loaderName
+        loaderCMD,
     };
 }

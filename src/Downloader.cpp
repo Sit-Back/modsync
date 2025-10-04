@@ -13,13 +13,21 @@ Downloader::Downloader(QDir path, const std::vector<QUrl>& urls) :
     downloadPath(path)
 {
     manager = new QNetworkAccessManager();
-    downloadTotal = urls.size();
+    downloadTotal = 0;
     finishedDownloads = 0;
 
     for (const QUrl& url : urls)
     {
         download(url);
     }
+}
+
+Downloader::Downloader(QDir path) :
+    downloadPath(path)
+{
+    manager = new QNetworkAccessManager();
+    downloadTotal = 0;
+    finishedDownloads = 0;
 }
 
 void Downloader::download(const QUrl& url)
@@ -31,6 +39,7 @@ void Downloader::download(const QUrl& url)
     file->open(QIODevice::WriteOnly);
 
     bool renamed = false;
+    downloadTotal++;
 
     QObject::connect(reply, &QNetworkReply::finished, [reply, file, this]()
     {

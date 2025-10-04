@@ -11,8 +11,7 @@ public:
     struct SyncMetadata
     {
         QString loaderID;
-        QString loaderURL;
-        QString loaderName;
+        QString loaderCMD;
     };
 
     //Constants
@@ -45,6 +44,8 @@ public:
 
     //Loader
     static bool javaInstalled();
+    static bool versionExists(QString versionName);
+    void downloadLoader();
 
     //Server Query Related
     void prepSync();
@@ -58,8 +59,7 @@ private:
     // From Server
     bool needToSync = true;
     QString loaderID;
-    QString loaderURL;
-    QString loaderName;
+    QString loaderCMD;
     std::vector<QString> modNamesDownload;
     std::vector<QString> modNamesRemove;
 
