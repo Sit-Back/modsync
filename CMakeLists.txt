@@ -13,8 +13,8 @@ qt_standard_project_setup()
 qt_add_executable(modsync
     WIN32 MACOSX_BUNDLE
         src/main.cpp
-        src/ui/WelcomePage.cpp
-        src/ui/WelcomePage.h
+        src/ui/ExistingInstancePage.cpp
+        src/ui/ExistingInstancePage.h
         src/ui/MainWizard.cpp
         src/ui/MainWizard.h
         src/SyncClient.cpp
@@ -25,6 +25,8 @@ qt_add_executable(modsync
         src/Downloader.h
         src/ui/FinishingUpPage.cpp
         src/ui/FinishingUpPage.h
+        src/ui/WelcomePage.cpp
+        src/ui/WelcomePage.h
 )
 
 target_link_libraries(modsync
