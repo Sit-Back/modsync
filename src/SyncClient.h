@@ -43,6 +43,8 @@ public:
     [[nodiscard]] bool addProfile() const;
     void removeExtras() const;
 
+    //Loader
+    static bool javaInstalled();
 
     //Server Query Related
     void prepSync();

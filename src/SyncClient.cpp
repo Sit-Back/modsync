@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <qregularexpression.h>
+#include <QStandardPaths>
 
 SyncClient::SyncClient()
 {
@@ -24,7 +25,6 @@ bool SyncClient::minecraftDirExists()
     return SyncClient::MINECRAFTDIR.exists();
 }
 
-
 bool SyncClient::removeInstallDir()
 {
     return QDir(PROFILEDIR).removeRecursively();
@@ -41,6 +41,12 @@ void SyncClient::removeExtras() const
     {
         QFile(MODSDIR.path() + "/" + file).remove();
     }
+}
+
+bool SyncClient::javaInstalled()
+{
+    const QString javaExe = QStandardPaths::findExecutable("java");
+    return !javaExe.isEmpty();
 }
 
 bool SyncClient::addProfile() const
