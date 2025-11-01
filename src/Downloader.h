@@ -17,8 +17,8 @@ public:
 private:
     const QDir downloadPath;
     QNetworkAccessManager* manager;
-    int finishedDownloads;
-    unsigned long downloadTotal;
+    int finishedDownloads = 0;
+    unsigned long downloadTotal = 0;
 
     signals :
     

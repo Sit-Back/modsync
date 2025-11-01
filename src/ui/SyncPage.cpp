@@ -51,6 +51,7 @@ void SyncPage::sync(std::vector<QUrl> urls)
     //2. Check if loader installed
     //3. then download and install if needed.
     //4. Download mods
+
     if (!urls.empty())
     {
         auto* downloader = new Downloader(SyncClient::MODSDIR.path(), urls);
@@ -70,9 +71,24 @@ void SyncPage::sync(std::vector<QUrl> urls)
     }
     else
     {
-        downloadProgressBar->setMaximum(1);
-        downloadProgressBar->setValue(1);
         downloadsComplete = true;
+    }
+
+    if (!SyncClient::versionExists(syncer.getMetadata().loaderID))
+    {
+        //log if version exists
+        syncer.downloadLoader();
+        downloadProgressBar->setMaximum(downloadProgressBar->maximum()+1);
+
+        connect(&syncer, &SyncClient::loaderDownloadFinished, this, [this]()
+        {
+            downloadProgressBar->setValue(static_cast<int>(downloadProgressBar->value() + 1));
+            loaderDownloadComplete = true;
+            emit completeChanged();
+        });
+    } else
+    {
+        loaderDownloadComplete = true;
         emit completeChanged();
     }
 

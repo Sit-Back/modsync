@@ -24,11 +24,7 @@ Downloader::Downloader(QDir path, const std::vector<QUrl>& urls) :
 
 Downloader::Downloader(QDir path) :
     downloadPath(path)
-{
-    manager = new QNetworkAccessManager();
-    downloadTotal = 0;
-    finishedDownloads = 0;
-}
+{manager = new QNetworkAccessManager();}
 
 void Downloader::download(const QUrl& url)
 {

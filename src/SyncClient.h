@@ -45,7 +45,8 @@ public:
     //Loader
     static bool javaInstalled();
     static bool versionExists(QString versionName);
-    void downloadLoader();
+    void downloadLoader() const;
+    void installLoader() const;
 
     //Server Query Related
     void prepSync();
@@ -64,6 +65,7 @@ private:
     std::vector<QString> modNamesRemove;
 
 signals:
-    void prepFinished();
-    void fetchError(const QString& msg);
+    void prepFinished() const;
+    void loaderDownloadFinished() const;
+    void fetchError(const QString& msg) const;
 };

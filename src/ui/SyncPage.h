@@ -17,6 +17,7 @@ public:
 private:
     SyncClient& syncer;
     bool downloadsComplete = false;
+    bool loaderDownloadComplete = false;
     void initializePage() override;
     bool isComplete() const override;
     QProgressBar* downloadProgressBar;

@@ -5,6 +5,8 @@
 #include <qregularexpression.h>
 #include <QStandardPaths>
 
+#include "Downloader.h"
+
 SyncClient::SyncClient()
 {
     networkManager = new QNetworkAccessManager();
@@ -33,6 +35,24 @@ bool SyncClient::versionExists(QString versionName)
     return std::any_of(versions.begin(), versions.end(), [versionName](const QString& version)
     {
         return version == versionName;
+    });
+}
+
+void SyncClient::downloadLoader() const
+{
+    if (needToSync)
+    {
+        throw std::runtime_error("Data has not been prepped yet.");
+    }
+
+    auto* downloader = new Downloader(PROFILEDIR);
+    auto loaderURL = ROOTURL;
+    loaderURL.setPath("/loader");
+    downloader->download(loaderURL);
+
+    connect(downloader, &Downloader::downloadFinished, this, [this]()
+    {
+       emit loaderDownloadFinished();
     });
 }
 
