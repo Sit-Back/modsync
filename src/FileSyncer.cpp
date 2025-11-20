@@ -30,7 +30,6 @@ void FileSyncer::removeExtras() const
 {
     for (const QString& file : modsToRemove.toVector())
     {
-        qDebug() << file;
         QFile(MODSDIR.path() + "/" + file).remove();
     }
 }
@@ -43,9 +42,9 @@ int FileSyncer::modsToDownloadCount() const
 void FileSyncer::downloadMod(const QString& modName)
 {
     QUrl modUrl = ROOTURL;
-    modUrl.setPath("mods/" + modName);
-    auto request = QNetworkRequest();
-    QNetworkReply* reply = manager.get(request);
+    modUrl.setPath("/mods/" + modName);
+    auto* request = new QNetworkRequest(modUrl);
+    QNetworkReply* reply = manager.get(*request);
 
     auto* file = new QFile(MODSDIR.filePath(modUrl.fileName()));
     if (!file->open(QIODevice::WriteOnly)) {throw std::runtime_error("Can't open file");}
