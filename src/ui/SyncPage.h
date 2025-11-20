@@ -15,8 +15,8 @@ public:
     explicit SyncPage(SyncClient* syncer, QWidget* parent = nullptr);
 
 private:
+    int progress = 0;
     SyncClient* syncer;
-    bool downloadsComplete = false;
     bool loaderDownloadComplete = false;
     void initializePage() override;
     bool isComplete() const override;

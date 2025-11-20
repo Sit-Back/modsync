@@ -19,7 +19,7 @@ modsToRemove(modsToRemove), modsToDownload(modsToDownload)
 
 void FileSyncer::downloadMods()
 {
-    for (const QString& mod : modsToDownload.toVector())
+    for (const QString& mod : modsToDownload)
     {
         downloadMod(mod);
     }

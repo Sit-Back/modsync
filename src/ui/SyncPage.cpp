@@ -32,22 +32,22 @@ void SyncPage::initializePage()
 
 bool SyncPage::isComplete() const
 {
-    return downloadsComplete;
+    return progress >= syncer->getStepNum();
 }
 
 
 void SyncPage::sync()
 {
     downloadProgressBar->setMaximum(syncer->getStepNum());
+    downloadProgressBar->setValue(0);
 
     connect(syncer, &SyncClient::finishStep, this, [this]()
         {
-            int currentValue = downloadProgressBar->value();
-            downloadProgressBar->setValue(static_cast<int>(currentValue + 1));
+            progress++;
+            downloadProgressBar->setValue(progress);
 
-            if (currentValue >= syncer->getStepNum())
+            if (progress >= syncer->getStepNum())
             {
-                downloadsComplete = true;
                 emit completeChanged();
             }
         });
