@@ -33,6 +33,11 @@ bool Initialise::isJavaInstalled()
     return !javaExe.isEmpty();
 }
 
+bool Initialise::removeInstallDir()
+{
+    return QDir(PROFILEDIR).removeRecursively();
+}
+
 QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
 {
     auto promise = QSharedPointer<QPromise<SyncMetadata>>::create();

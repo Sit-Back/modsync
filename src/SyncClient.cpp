@@ -20,11 +20,6 @@ bool SyncClient::versionExists(QString versionName)
     });
 }
 
-bool SyncClient::removeInstallDir()
-{
-    return QDir(PROFILEDIR).removeRecursively();
-}
-
 */
 
 SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :

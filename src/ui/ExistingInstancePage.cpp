@@ -34,7 +34,7 @@ ExistingInstancePage::ExistingInstancePage(QWidget* parent)
     removeButton = new QPushButton("Remove Current Instance");
     connect(removeButton, &QPushButton::pressed, this, [this]()
     {
-        //Initialise::removeInstallDir();
+        Initialise::removeInstallDir();
         QMessageBox::information(nullptr, "Removed Profile", "Finished removing profile.");
         removeButton->setDisabled(true);
     });
