@@ -1,52 +1,36 @@
 #include "Downloader.h"
 
 #include <QNetworkReply>
-#include <utility>
-
 #include "SyncClient.h"
+#include <QFile>
 
-unsigned long Downloader::getDownloadsTotal() const { return downloadTotal; }
+Downloader::Downloader()
+{manager = new QNetworkAccessManager();}
 
-unsigned long Downloader::getDownloadsFinished() const { return finishedDownloads; }
-
-Downloader::Downloader(QDir path, const std::vector<QUrl>& urls) :
-    downloadPath(path)
+void Downloader::download(const std::vector<QUrl>& urls, const QDir& path)
 {
-    manager = new QNetworkAccessManager();
-    downloadTotal = 0;
-    finishedDownloads = 0;
-
-    for (const QUrl& url : urls)
+    for (auto url : urls)
     {
-        download(url);
+        download(url, path);
     }
 }
 
-Downloader::Downloader(QDir path) :
-    downloadPath(path)
-{manager = new QNetworkAccessManager();}
-
-void Downloader::download(const QUrl& url)
+void Downloader::download(const QUrl& url, const QDir& path)
 {
     auto* request = new QNetworkRequest(url);
     QNetworkReply* reply = manager->get(*request);
 
-    auto* file = new QFile(downloadPath.filePath(url.fileName()));
-    file->open(QIODevice::WriteOnly);
+    auto* file = new QFile(path.filePath(url.fileName()));
+    if (!file->open(QIODevice::WriteOnly)) {throw std::runtime_error("Can't open file");}
 
     bool renamed = false;
-    downloadTotal++;
 
-    QObject::connect(reply, &QNetworkReply::finished, [reply, file, this]()
+    QObject::connect(reply, &QNetworkReply::finished, [reply, file]()
     {
         //Cleanup
         file->close();
         reply->deleteLater();
 
-        //Needed for UI
-        finishedDownloads++;
-        assert(finishedDownloads <= downloadTotal);
-        emit this->downloadFinished();
     });
     QObject::connect(reply, &QNetworkReply::readyRead, [reply, file]()
     {

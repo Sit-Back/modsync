@@ -8,19 +8,13 @@ class Downloader : public QObject
     Q_OBJECT
 
 public:
-    Downloader(QDir path, const std::vector<QUrl>& urls);
-    Downloader(QDir path);
-    void download(const QUrl& url);
-    [[nodiscard]] unsigned long getDownloadsTotal() const;
-    [[nodiscard]] unsigned long getDownloadsFinished() const;
+    Downloader();
+    void download(const QUrl& url, const QDir& path);
+    void download(const std::vector<QUrl>& urls, const QDir& path);
 
 private:
-    const QDir downloadPath;
     QNetworkAccessManager* manager;
-    int finishedDownloads = 0;
-    unsigned long downloadTotal = 0;
 
     signals :
-    
     void downloadFinished();
 };

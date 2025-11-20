@@ -6,6 +6,7 @@
 #include <QStandardPaths>
 
 #include "Downloader.h"
+#include <QProcess>
 
 SyncClient::SyncClient()
 {
@@ -45,10 +46,10 @@ void SyncClient::downloadLoader() const
         throw std::runtime_error("Data has not been prepped yet.");
     }
 
-    auto* downloader = new Downloader(PROFILEDIR);
+    auto* downloader = new Downloader();
     auto loaderURL = ROOTURL;
     loaderURL.setPath("/loader");
-    downloader->download(loaderURL);
+    downloader->download(loaderURL, PROFILEDIR);
 
     connect(downloader, &Downloader::downloadFinished, this, [this]()
     {
@@ -80,7 +81,7 @@ bool SyncClient::javaInstalled()
     return !javaExe.isEmpty();
 }
 
-bool SyncClient::addProfile() const
+bool SyncClient::addProfile() const //Will be private method in syncer
 {
     QString profileString = R"(
     "modsync": {
@@ -158,7 +159,7 @@ bool SyncClient::addProfile() const
     }
 }
 
-void SyncClient::prepSync()
+void SyncClient::prepSync() //Will use a factory instead.
 {
     QUrl metadataURL = ROOTURL;
     metadataURL.setPath("/meta");
