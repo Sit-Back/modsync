@@ -7,8 +7,7 @@
 
 #include "../SyncClient.h"
 
-FinishingUpPage::FinishingUpPage(SyncClient* syncer, QWidget* parent) :
-    syncer(*syncer)
+FinishingUpPage::FinishingUpPage(QWidget* parent)
 {
     setTitle("Done");
     auto* layout = new QVBoxLayout();

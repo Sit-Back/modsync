@@ -27,16 +27,16 @@ bool SyncClient::removeInstallDir()
 
 */
 
-SyncClient::SyncClient(LoaderInstaller& loaderInstaller, FileSyncer& fileSyncer) :
+SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
 loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
 {}
 
 void SyncClient::startSync()
 {
-    fileSyncer.removeExtras();
-    fileSyncer.downloadMods();
+    fileSyncer->removeExtras();
+    fileSyncer->downloadMods();
 
-    connect(&fileSyncer, &FileSyncer::modDownloaded, this, [this]()
+    connect(fileSyncer, &FileSyncer::modDownloaded, this, [this]()
     {
         emit finishStep();
     });
@@ -44,11 +44,5 @@ void SyncClient::startSync()
 
 int SyncClient::getStepNum() const
 {
-    return fileSyncer.modsToDownloadCount();
-}
-
-int SyncClient::test() const
-{
-    loaderInstaller.addProfile();
-    return 42;
+    return fileSyncer->modsToDownloadCount();
 }

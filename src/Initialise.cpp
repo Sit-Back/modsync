@@ -128,7 +128,7 @@ QStringList Initialise::getModsToRemove(const QStringList& mods)
 
 SyncClient* Initialise::createSyncPackage(SyncMetadata metadata)
 {
-    LoaderInstaller loader(metadata.loaderID, metadata.loaderCMD);
-    FileSyncer file(metadata.modsToRemove, metadata.modsToDownload);
+    auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
+    auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
     return new SyncClient(loader, file);
 }

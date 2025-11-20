@@ -9,7 +9,7 @@
 #include "WelcomePage.h"
 #include "../Initialise.h"
 
-MainWizard::MainWizard(SyncClient* syncer) : syncer(*syncer)
+MainWizard::MainWizard(SyncClient* syncer) : syncer(syncer)
 {
 
     /*connect(&syncer, &SyncClient::fetchError, this, [](const QString& msg)
@@ -31,7 +31,7 @@ MainWizard::MainWizard(SyncClient* syncer) : syncer(*syncer)
     }
     QWizardPage* sync = new SyncPage(syncer);
     addPage(sync);
-    QWizardPage* finishing = new FinishingUpPage(syncer);
+    QWizardPage* finishing = new FinishingUpPage();
     addPage(finishing);
 
     setWindowTitle("Modsync");

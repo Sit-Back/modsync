@@ -9,5 +9,5 @@ public:
     MainWizard(SyncClient* syncer);
 
 private:
-    SyncClient& syncer;
+    SyncClient* syncer;
 };

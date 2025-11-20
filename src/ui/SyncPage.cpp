@@ -8,7 +8,7 @@
 #include "../Initialise.h"
 
 SyncPage::SyncPage(SyncClient* syncer, QWidget* parent)
-    : QWizardPage(parent), syncer(*syncer)
+    : QWizardPage(parent), syncer(syncer)
 {
     setTitle("Syncing...");
 
@@ -38,19 +38,21 @@ bool SyncPage::isComplete() const
 
 void SyncPage::sync()
 {
-        downloadProgressBar->setMaximum(syncer.getStepNum());
+    downloadProgressBar->setMaximum(syncer->getStepNum());
 
-    connect(&syncer, &SyncClient::finishStep, this, [this]()
+    connect(syncer, &SyncClient::finishStep, this, [this]()
         {
             int currentValue = downloadProgressBar->value();
             downloadProgressBar->setValue(static_cast<int>(currentValue + 1));
 
-            if (currentValue >= syncer.getStepNum())
+            if (currentValue >= syncer->getStepNum())
             {
                 downloadsComplete = true;
                 emit completeChanged();
             }
         });
+
+    syncer->startSync();
 
     /*if (!SyncClient::versionExists(syncer.getMetadata().loaderID))
     {
