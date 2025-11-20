@@ -28,7 +28,7 @@ void FileSyncer::downloadMods()
 
 void FileSyncer::removeExtras() const
 {
-    for (const QString& file : modsToRemove.toVector())
+    for (const QString& file : modsToRemove)
     {
         QFile(MODSDIR.path() + "/" + file).remove();
     }

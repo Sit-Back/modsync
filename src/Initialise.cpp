@@ -65,7 +65,7 @@ QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
 
             reply->deleteLater();
             QStringList modsToDownload = getModsToDownload(mods);
-            QStringList modsToRemove = getModsToRemove(modsToDownload);
+            QStringList modsToRemove = getModsToRemove(mods);
             promise->addResult(SyncMetadata{loaderID, loaderCMD, modsToDownload, modsToRemove});
             promise->finish();
         }
