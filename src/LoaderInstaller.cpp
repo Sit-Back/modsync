@@ -104,3 +104,14 @@ bool LoaderInstaller::addProfile() const
         return false;
     }
 }
+
+bool LoaderInstaller::loaderVersionExists() const
+{
+    QDir versionsPath(MINECRAFTDIR);
+    versionsPath.cd("versions");
+    QStringList versions = versionsPath.entryList(QDir::Dirs);
+    return std::any_of(versions.begin(), versions.end(), [this](const QString& version)
+    {
+        return version == loaderID;
+    });
+}

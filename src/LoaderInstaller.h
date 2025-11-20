@@ -14,6 +14,7 @@ class LoaderInstaller : public QObject
     void downloadLoader() const;
     bool installLoader() const;
     bool addProfile() const;
+    bool loaderVersionExists() const;
 
 private:
     QString loaderID;

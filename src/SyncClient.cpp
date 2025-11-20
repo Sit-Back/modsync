@@ -8,19 +8,6 @@
 #include "Downloader.h"
 #include <QProcess>
 
-/*
-bool SyncClient::versionExists(QString versionName)
-{
-    QDir versionsPath(MINECRAFTDIR);
-    versionsPath.cd("versions");
-    QStringList versions = versionsPath.entryList(QDir::Dirs);
-    return std::any_of(versions.begin(), versions.end(), [versionName](const QString& version)
-    {
-        return version == versionName;
-    });
-}
-
-*/
 
 SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
 loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
