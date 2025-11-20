@@ -27,6 +27,15 @@ qt_add_executable(modsync
         src/ui/FinishingUpPage.h
         src/ui/WelcomePage.cpp
         src/ui/WelcomePage.h
+        src/Initialise.cpp
+        src/Initialise.h
+        src/SyncMetadata.h
+        src/Locations.h
+        src/LoaderInstaller.cpp
+        src/LoaderInstaller.h
+        src/LoaderInstaller.cpp
+        src/FileSyncer.cpp
+        src/FileSyncer.h
 )
 
 target_link_libraries(modsync

@@ -7,26 +7,26 @@
 #include "ExistingInstancePage.h"
 #include "FinishingUpPage.h"
 #include "WelcomePage.h"
+#include "../Initialise.h"
 
-MainWizard::MainWizard(SyncClient& syncer) : syncer(syncer)
+MainWizard::MainWizard(SyncClient* syncer) : syncer(*syncer)
 {
-    syncer.prepSync();
-    connect(&syncer, &SyncClient::fetchError, this, [](const QString& msg)
+
+    /*connect(&syncer, &SyncClient::fetchError, this, [](const QString& msg)
     {
         QMessageBox::critical(nullptr, "Error!", msg);
         QApplication::exit();
-    });
-
+    });*/
 
     setOptions(QWizard::DisabledBackButtonOnLastPage | QWizard::NoCancelButtonOnLastPage);
 
-    if (SyncClient::installDirExists())
+    if (Initialise::isInstallDirExist())
     {
-        QWizardPage* existingInstance = new ExistingInstancePage(syncer);
+        QWizardPage* existingInstance = new ExistingInstancePage();
         addPage(existingInstance);
     } else
     {
-        QWizardPage* welcome = new WelcomePage(syncer);
+        QWizardPage* welcome = new WelcomePage();
         addPage(welcome);
     }
     QWizardPage* sync = new SyncPage(syncer);

@@ -5,8 +5,10 @@
 #include <QMessageBox>
 #include <QProgressBar>
 
-SyncPage::SyncPage(SyncClient& syncer, QWidget* parent)
-    : QWizardPage(parent), syncer(syncer)
+#include "../Initialise.h"
+
+SyncPage::SyncPage(SyncClient* syncer, QWidget* parent)
+    : QWizardPage(parent), syncer(*syncer)
 {
     setTitle("Syncing...");
 
@@ -23,18 +25,9 @@ SyncPage::SyncPage(SyncClient& syncer, QWidget* parent)
 
 void SyncPage::initializePage()
 {
-    // Create list of mod URLs to pass to sync function
-    std::vector<QUrl> modUrls;
-    for (const QString& modName : syncer.getModDownload())
-    {
-        QUrl modUrl = SyncClient::ROOTURL;
-        modUrl.setPath("/mods/" + modName);
-        modUrls.push_back(modUrl);
-    }
-
     //Create profile directory before syncing.
-    SyncClient::createProfileDir();
-    sync(modUrls);
+    Initialise::createProfileDir();
+    sync();
 }
 
 bool SyncPage::isComplete() const
@@ -43,38 +36,23 @@ bool SyncPage::isComplete() const
 }
 
 
-void SyncPage::sync(std::vector<QUrl> urls)
+void SyncPage::sync()
 {
-    //1. Remove extra mods that arn't on server.
-    syncer.removeExtras();
+        downloadProgressBar->setMaximum(syncer.getStepNum());
 
-    //2. Check if loader installed
-    //3. then download and install if needed.
-    //4. Download mods
-
-    if (!urls.empty())
-    {
-        auto* downloader = new Downloader(SyncClient::MODSDIR.path(), urls);
-
-        downloadProgressBar->setMaximum(static_cast<int>(downloader->getDownloadsTotal()));
-
-        connect(downloader, &Downloader::downloadFinished, this, [this, downloader]()
+    connect(&syncer, &SyncClient::finishStep, this, [this]()
         {
-            downloadProgressBar->setValue(static_cast<int>(downloader->getDownloadsFinished()));
+            int currentValue = downloadProgressBar->value();
+            downloadProgressBar->setValue(static_cast<int>(currentValue + 1));
 
-            if (downloader->getDownloadsFinished() >= downloader->getDownloadsTotal())
+            if (currentValue >= syncer.getStepNum())
             {
                 downloadsComplete = true;
                 emit completeChanged();
             }
         });
-    }
-    else
-    {
-        downloadsComplete = true;
-    }
 
-    if (!SyncClient::versionExists(syncer.getMetadata().loaderID))
+    /*if (!SyncClient::versionExists(syncer.getMetadata().loaderID))
     {
         //log if version exists
         syncer.downloadLoader();
@@ -99,5 +77,5 @@ void SyncPage::sync(std::vector<QUrl> urls)
         QMessageBox::critical(nullptr, "Launcher Profile Add Failed",
                               "Could not add launcher profile! Ensure that the file"
                               " exists, is both readable and writable and is not corrupt.");
-    }
+    }*/
 }

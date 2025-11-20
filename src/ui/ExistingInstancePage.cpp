@@ -10,21 +10,12 @@
 
 #include "MainWizard.h"
 #include "SyncPage.h"
+#include "../Initialise.h"
+#include "../Locations.h"
 
-bool ExistingInstancePage::isComplete() const
-{
-    return fetchingFinished;
-}
-
-ExistingInstancePage::ExistingInstancePage(SyncClient& syncer, QWidget* parent)
+ExistingInstancePage::ExistingInstancePage(QWidget* parent)
     : QWizardPage(parent)
 {
-    connect(&syncer, &SyncClient::prepFinished, this, [this]()
-    {
-        fetchingFinished = true;
-        emit completeChanged();
-    });
-
     setTitle("Existing Instance Found!");
     auto* layout = new QVBoxLayout();
     setLayout(layout);
@@ -41,12 +32,9 @@ ExistingInstancePage::ExistingInstancePage(SyncClient& syncer, QWidget* parent)
     actionBar->setLayout(actionBarLayout);
 
     removeButton = new QPushButton("Remove Current Instance");
-    connect(removeButton, &QPushButton::pressed, this, [&syncer, this]()
+    connect(removeButton, &QPushButton::pressed, this, [this]()
     {
-        SyncClient::removeInstallDir();
-        fetchingFinished = false;
-        emit completeChanged();
-        syncer.prepSync();
+        //Initialise::removeInstallDir();
         QMessageBox::information(nullptr, "Removed Profile", "Finished removing profile.");
         removeButton->setDisabled(true);
     });
@@ -54,7 +42,7 @@ ExistingInstancePage::ExistingInstancePage(SyncClient& syncer, QWidget* parent)
     auto* browseButton = new QPushButton("Browse...");
     connect(browseButton, &QPushButton::pressed, this, []()
     {
-        QDesktopServices::openUrl(QUrl::fromLocalFile(SyncClient::PROFILEDIR.path()));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(PROFILEDIR.path()));
     });
 
     actionBarLayout->addWidget(removeButton);

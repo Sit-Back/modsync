@@ -10,10 +10,8 @@ class ExistingInstancePage final : public QWizardPage
     Q_OBJECT
 
 public:
-    bool isComplete() const override;
-    explicit ExistingInstancePage(SyncClient& syncer, QWidget* parent = nullptr);
+    explicit ExistingInstancePage(QWidget* parent = nullptr);
 
 private:
-    bool fetchingFinished = false;
     QPushButton* removeButton;
 };

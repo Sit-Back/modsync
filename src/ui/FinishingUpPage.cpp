@@ -7,8 +7,8 @@
 
 #include "../SyncClient.h"
 
-FinishingUpPage::FinishingUpPage(SyncClient& syncer, QWidget* parent) :
-    syncer(syncer)
+FinishingUpPage::FinishingUpPage(SyncClient* syncer, QWidget* parent) :
+    syncer(*syncer)
 {
     setTitle("Done");
     auto* layout = new QVBoxLayout();
@@ -17,8 +17,6 @@ FinishingUpPage::FinishingUpPage(SyncClient& syncer, QWidget* parent) :
 
 void FinishingUpPage::initializePage()
 {
-    SyncClient::SyncMetadata metadata = syncer.getMetadata();
-
     auto* usage = new QLabel(
         "Sync has finished! Start the Minecraft launcher to play."
     );

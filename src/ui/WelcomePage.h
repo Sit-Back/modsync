@@ -7,8 +7,5 @@ class WelcomePage : public QWizardPage
 {
     Q_OBJECT
 public:
-    bool isComplete() const override;
-    WelcomePage(SyncClient& syncer, QWidget* parent = nullptr);
-private:
-    bool fetchingFinished = false;
+    WelcomePage(QWidget* parent = nullptr);
 };

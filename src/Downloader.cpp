@@ -25,11 +25,12 @@ void Downloader::download(const QUrl& url, const QDir& path)
 
     bool renamed = false;
 
-    QObject::connect(reply, &QNetworkReply::finished, [reply, file]()
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply, file]()
     {
         //Cleanup
         file->close();
         reply->deleteLater();
+        emit downloadFinished();
 
     });
     QObject::connect(reply, &QNetworkReply::readyRead, [reply, file]()

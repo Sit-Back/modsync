@@ -3,13 +3,8 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-WelcomePage::WelcomePage(SyncClient& syncer, QWidget* parent)
+WelcomePage::WelcomePage(QWidget* parent)
 {
-    connect(&syncer, &SyncClient::prepFinished, this, [this]()
-    {
-        fetchingFinished = true;
-        emit completeChanged();
-    });
 
     setTitle("Welcome to Modsync!");
     auto* layout = new QVBoxLayout();
@@ -22,10 +17,4 @@ WelcomePage::WelcomePage(SyncClient& syncer, QWidget* parent)
     welcome->setWordWrap(true);
 
     layout->addWidget(welcome);
-
-}
-
-bool WelcomePage::isComplete() const
-{
-    return fetchingFinished;
 }
