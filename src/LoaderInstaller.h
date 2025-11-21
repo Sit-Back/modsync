@@ -10,9 +10,9 @@ class LoaderInstaller : public QObject
     Q_OBJECT
 
     public:
-    LoaderInstaller(QString loaderID, QString silentInstallCMD);
+    LoaderInstaller(QString loaderID, QString loaderCMD);
     void downloadLoader() const;
-    bool installLoader() const;
+    void installLoader() const;
     bool addProfile() const;
     bool loaderVersionExists() const;
 

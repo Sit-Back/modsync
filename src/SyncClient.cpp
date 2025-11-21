@@ -10,13 +10,26 @@
 
 
 SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
-loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
-{}
+    loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
+{
+}
 
 void SyncClient::startSync()
 {
     fileSyncer->removeExtras();
     fileSyncer->downloadMods();
+    loaderInstaller->downloadLoader();
+
+    connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
+    {
+        emit finishStep();
+        loaderInstaller->installLoader();
+
+        connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
+        {
+            emit finishStep();
+        });
+    });
 
     connect(fileSyncer, &FileSyncer::modDownloaded, this, [this]()
     {
@@ -26,5 +39,5 @@ void SyncClient::startSync()
 
 int SyncClient::getStepNum() const
 {
-    return fileSyncer->modsToDownloadCount();
+    return fileSyncer->modsToDownloadCount() + 2;
 }
