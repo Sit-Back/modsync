@@ -4,25 +4,29 @@
 #include <QMessageBox>
 
 #include "SyncPage.h"
-#include "WelcomePage.h"
+#include "ExistingInstancePage.h"
 #include "FinishingUpPage.h"
+#include "WelcomePage.h"
+#include "../Initialise.h"
 
-MainWizard::MainWizard(SyncClient& syncer) : syncer(syncer)
+MainWizard::MainWizard(SyncClient* syncer) : syncer(syncer)
 {
-    syncer.prepSync();
-    connect(&syncer, &SyncClient::fetchError, this, [](const QString& msg)
-    {
-        QMessageBox::critical(nullptr, "Error!", msg);
-        QApplication::exit();
-    });
-    QWizardPage* welcome = new WelcomePage(syncer);
-    QWizardPage* sync = new SyncPage(syncer);
-    QWizardPage* finishing = new FinishingUpPage(syncer);
-    setOptions(QWizard::DisabledBackButtonOnLastPage | QWizard::NoCancelButtonOnLastPage);
+    setOptions(QWizard::NoCancelButtonOnLastPage);
 
-    addPage(welcome);
+    if (Initialise::isInstallDirExist())
+    {
+        QWizardPage* existingInstance = new ExistingInstancePage(syncer);
+        addPage(existingInstance);
+    } else
+    {
+        QWizardPage* welcome = new WelcomePage(syncer);
+        addPage(welcome);
+    }
+    QWizardPage* sync = new SyncPage(syncer);
     addPage(sync);
+    QWizardPage* finishing = new FinishingUpPage();
     addPage(finishing);
+
     setWindowTitle("Modsync");
 }
 

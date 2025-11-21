@@ -1,20 +1,15 @@
 #pragma once
-
-#include <QMainWindow>
 #include <QWizardPage>
+#include "../SyncClient.h"
 
-class SyncClient;
 
-class WelcomePage final : public QWizardPage
+class WelcomePage : public QWizardPage
 {
     Q_OBJECT
-
-    bool fetchingFinished = false;
-
 public:
-    bool isComplete() const override;
-    explicit WelcomePage(SyncClient& syncer, QWidget* parent = nullptr);
-
+    explicit WelcomePage(SyncClient* syncer, QWidget* parent = nullptr);
+    int nextId() const override;
+    bool validatePage() override;
 private:
-    QPushButton* removeButton;
+    SyncClient* syncer{};
 };

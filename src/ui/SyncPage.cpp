@@ -2,9 +2,12 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QComboBox>
+#include <QMessageBox>
 #include <QProgressBar>
 
-SyncPage::SyncPage(SyncClient& syncer, QWidget* parent)
+#include "../Initialise.h"
+
+SyncPage::SyncPage(SyncClient* syncer, QWidget* parent)
     : QWizardPage(parent), syncer(syncer)
 {
     setTitle("Syncing...");
@@ -22,49 +25,59 @@ SyncPage::SyncPage(SyncClient& syncer, QWidget* parent)
 
 void SyncPage::initializePage()
 {
-    std::vector<QUrl> modUrls;
-    for (const QString& modName : syncer.getModDownload())
-    {
-        QUrl modUrl = SyncClient::ROOTURL;
-        modUrl.setPath("/mods/" + modName);
-        modUrls.push_back(modUrl);
-    }
-
-    SyncClient::createProfileDir();
-    sync(modUrls);
+    //Create profile directory before syncing.
+    Initialise::createProfileDir();
+    sync();
 }
 
 bool SyncPage::isComplete() const
 {
-    return downloadsComplete;
+    return progress >= syncer->getStepNum();
 }
 
 
-void SyncPage::sync(std::vector<QUrl> urls)
+void SyncPage::sync()
 {
-    syncer.removeExtras();
-    if (!urls.empty())
-    {
-        auto* downloader = new Downloader(SyncClient::MODSDIR.path(), urls);
+    downloadProgressBar->setMaximum(syncer->getStepNum());
+    downloadProgressBar->setValue(0);
 
-        downloadProgressBar->setMaximum(static_cast<int>(downloader->getDownloadsTotal()));
-
-        connect(downloader, &Downloader::downloadFinished, this, [this, downloader]()
+    connect(syncer, &SyncClient::finishStep, this, [this]()
         {
-            downloadProgressBar->setValue(static_cast<int>(downloader->getDownloadsFinished()));
+            progress++;
+            downloadProgressBar->setValue(progress);
 
-            if (downloader->getDownloadsFinished() >= downloader->getDownloadsTotal())
+            if (progress >= syncer->getStepNum())
             {
-                downloadsComplete = true;
                 emit completeChanged();
             }
         });
-    }
-    else
+
+    syncer->startSync();
+
+    /*if (!SyncClient::versionExists(syncer.getMetadata().loaderID))
     {
-        downloadProgressBar->setMaximum(1);
-        downloadProgressBar->setValue(1);
-        downloadsComplete = true;
+        //log if version exists
+        syncer.downloadLoader();
+        downloadProgressBar->setMaximum(downloadProgressBar->maximum()+1);
+
+        connect(&syncer, &SyncClient::loaderDownloadFinished, this, [this]()
+        {
+            downloadProgressBar->setValue(static_cast<int>(downloadProgressBar->value() + 1));
+            loaderDownloadComplete = true;
+            emit completeChanged();
+        });
+    } else
+    {
+        loaderDownloadComplete = true;
         emit completeChanged();
     }
+
+    //5. Add profile to launcher
+    bool profileAddSuccess = syncer.addProfile();
+    if (!profileAddSuccess)
+    {
+        QMessageBox::critical(nullptr, "Launcher Profile Add Failed",
+                              "Could not add launcher profile! Ensure that the file"
+                              " exists, is both readable and writable and is not corrupt.");
+    }*/
 }
