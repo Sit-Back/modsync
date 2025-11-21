@@ -7,7 +7,6 @@
 #include "SyncClient.h"
 #include "SyncMetadata.h"
 
-
 class Initialise
 {
     public:
@@ -25,6 +24,12 @@ class Initialise
 private:
     static QStringList getModsToDownload(const QStringList& mods);
     static QStringList getModsToRemove(const QStringList& mods);
+    static bool isValidMetadata(QString loaderID, QString loaderCMD);
 };
 
-
+class MetadataFetchError : public std::runtime_error
+{
+    public:
+    MetadataFetchError(const char* error) : runtime_error(error)
+    {}
+};

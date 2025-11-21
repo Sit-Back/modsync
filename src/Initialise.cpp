@@ -38,6 +38,11 @@ bool Initialise::removeInstallDir()
     return QDir(PROFILEDIR).removeRecursively();
 }
 
+bool Initialise::isValidMetadata(QString loaderID, QString loaderCMD)
+{
+    return loaderID.slice(0,3) == "LID" && loaderCMD.slice(0,3) == "CMD";
+}
+
 QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
 {
     auto promise = QSharedPointer<QPromise<SyncMetadata>>::create();
@@ -52,32 +57,33 @@ QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
     QObject::connect(reply, &QNetworkReply::finished, [reply, promise]()
     {
         promise->start();
-        if (reply->error() == QNetworkReply::NoError)
+        if (reply->error() != QNetworkReply::NoError)
         {
-            QString loaderID = reply->readLine().trimmed();
-            QString loaderCMD = reply->readLine().trimmed();
-
-            if (loaderID.isEmpty() || loaderCMD.isEmpty())
-            {
-                //Create fancy error message here
-            }
-
-            QStringList mods;
-            while (!reply->atEnd())
-            {
-                mods.emplace_back(reply->readLine().trimmed());
-            }
-
-            reply->deleteLater();
-            QStringList modsToDownload = getModsToDownload(mods);
-            QStringList modsToRemove = getModsToRemove(mods);
-            promise->addResult(SyncMetadata{loaderID, loaderCMD, modsToDownload, modsToRemove});
-            promise->finish();
+            throw MetadataFetchError("Network error occured and failed to fetch metadata");
         }
-        else
+
+        QString loaderID = reply->readLine().trimmed();
+        QString loaderCMD = reply->readLine().trimmed();
+
+        if (!isValidMetadata(loaderID, loaderCMD))
         {
-            //Throw custom error code and catch with fancy popup
+            throw MetadataFetchError("Metadata is malformed");
         }
+
+        loaderID = loaderID.slice(3);
+        loaderCMD = loaderCMD.slice(3);
+
+        QStringList mods;
+        while (!reply->atEnd())
+        {
+            mods.emplace_back(reply->readLine().trimmed());
+        }
+
+        reply->deleteLater();
+        QStringList modsToDownload = getModsToDownload(mods);
+        QStringList modsToRemove = getModsToRemove(mods);
+        promise->addResult(SyncMetadata{loaderID, loaderCMD, modsToDownload, modsToRemove});
+        promise->finish();
     });
 
     return future;
