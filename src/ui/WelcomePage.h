@@ -7,5 +7,9 @@ class WelcomePage : public QWizardPage
 {
     Q_OBJECT
 public:
-    WelcomePage(QWidget* parent = nullptr);
+    explicit WelcomePage(SyncClient* syncer, QWidget* parent = nullptr);
+    int nextId() const override;
+    bool validatePage() override;
+private:
+    SyncClient* syncer{};
 };

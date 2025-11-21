@@ -40,7 +40,12 @@ bool Initialise::removeInstallDir()
 
 bool Initialise::isValidMetadata(QString loaderID, QString loaderCMD)
 {
-    return loaderID.slice(0,3) == "LID" && loaderCMD.slice(0,3) == "CMD";
+    if (!loaderCMD.isEmpty() && !loaderID.isEmpty())
+    {
+        return loaderID.slice(0, 3) == "LID" && loaderCMD.slice(0, 3) == "CMD";
+    }
+
+    return false;
 }
 
 QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
@@ -59,31 +64,37 @@ QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
         promise->start();
         if (reply->error() != QNetworkReply::NoError)
         {
-            throw MetadataFetchError("Network error occured and failed to fetch metadata");
+            auto exception = MetadataFetchError("Network error occured and failed to fetch metadata");
+            promise->setException(std::make_exception_ptr(exception));
+            promise->finish();
         }
-
-        QString loaderID = reply->readLine().trimmed();
-        QString loaderCMD = reply->readLine().trimmed();
-
-        if (!isValidMetadata(loaderID, loaderCMD))
+        else
         {
-            throw MetadataFetchError("Metadata is malformed");
+            QString loaderID = reply->readLine().trimmed();
+            QString loaderCMD = reply->readLine().trimmed();
+
+            if (!isValidMetadata(loaderID, loaderCMD))
+            {
+                promise->setException(std::make_exception_ptr(MetadataFetchError("Malformed metadata")));
+                promise->finish();
+            } else
+            {
+                loaderID = loaderID.slice(3);
+                loaderCMD = loaderCMD.slice(3);
+
+                QStringList mods;
+                while (!reply->atEnd())
+                {
+                    mods.emplace_back(reply->readLine().trimmed());
+                }
+
+                reply->deleteLater();
+                QStringList modsToDownload = getModsToDownload(mods);
+                QStringList modsToRemove = getModsToRemove(mods);
+                promise->addResult(SyncMetadata{loaderID, loaderCMD, modsToDownload, modsToRemove});
+                promise->finish();
+            }
         }
-
-        loaderID = loaderID.slice(3);
-        loaderCMD = loaderCMD.slice(3);
-
-        QStringList mods;
-        while (!reply->atEnd())
-        {
-            mods.emplace_back(reply->readLine().trimmed());
-        }
-
-        reply->deleteLater();
-        QStringList modsToDownload = getModsToDownload(mods);
-        QStringList modsToRemove = getModsToRemove(mods);
-        promise->addResult(SyncMetadata{loaderID, loaderCMD, modsToDownload, modsToRemove});
-        promise->finish();
     });
 
     return future;
@@ -116,7 +127,9 @@ QStringList Initialise::getModsToRemove(const QStringList& mods)
         if (filename.front() == QChar('!'))
         {
             qInfo() << "Mod omitted due to '!' tag: " << filename;
-        } else {
+        }
+        else
+        {
             bool filenameFound = false;
             for (QString mod : mods)
             {

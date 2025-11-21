@@ -31,16 +31,23 @@ int main(int argc, char* argv[])
     }
 
     auto watcher = new QFutureWatcher<SyncMetadata>;
-    QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [&watcher]()
+    QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher]()
     {
-        SyncMetadata metadataresult = watcher->future().result();
-        SyncClient* syncer = Initialise::createSyncPackage(metadataresult);
-        auto wizard = new MainWizard(syncer);
-        wizard->show();
+        try
+        {
+            SyncMetadata metadataresult = watcher->future().result();
+            SyncClient* syncer = Initialise::createSyncPackage(metadataresult);
+            auto wizard = new MainWizard(syncer);
+            wizard->show();
+        }
+        catch (const MetadataFetchError &e)
+        {
+            QMessageBox::critical(nullptr, "Error Fetching Sync Metadata",e.what());
+            QApplication::quit();
+        }
     });
 
     QFuture<SyncMetadata> metatdata = Initialise::fetchSyncMetadata();
     watcher->setFuture(metatdata);
-
     return a.exec();
 }

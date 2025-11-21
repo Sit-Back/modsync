@@ -11,22 +11,15 @@
 
 MainWizard::MainWizard(SyncClient* syncer) : syncer(syncer)
 {
-
-    /*connect(&syncer, &SyncClient::fetchError, this, [](const QString& msg)
-    {
-        QMessageBox::critical(nullptr, "Error!", msg);
-        QApplication::exit();
-    });*/
-
-    setOptions(QWizard::DisabledBackButtonOnLastPage | QWizard::NoCancelButtonOnLastPage);
+    setOptions(QWizard::NoCancelButtonOnLastPage);
 
     if (Initialise::isInstallDirExist())
     {
-        QWizardPage* existingInstance = new ExistingInstancePage();
+        QWizardPage* existingInstance = new ExistingInstancePage(syncer);
         addPage(existingInstance);
     } else
     {
-        QWizardPage* welcome = new WelcomePage();
+        QWizardPage* welcome = new WelcomePage(syncer);
         addPage(welcome);
     }
     QWizardPage* sync = new SyncPage(syncer);

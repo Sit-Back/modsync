@@ -13,12 +13,14 @@
 #include "../Initialise.h"
 #include "../Locations.h"
 
-ExistingInstancePage::ExistingInstancePage(QWidget* parent)
-    : QWizardPage(parent)
+ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
+: syncer(syncer)
 {
     setTitle("Existing Instance Found!");
     auto* layout = new QVBoxLayout();
     setLayout(layout);
+    setCommitPage(true);
+    setButtonText(QWizard::WizardButton::CommitButton, "Sync >");
 
     auto* welcome = new QLabel("It seems you already have an instance of Modsync installed!"
         " If you with to update, continue to the next page."
@@ -51,4 +53,27 @@ ExistingInstancePage::ExistingInstancePage(QWidget* parent)
     layout->addWidget(welcome);
     layout->addWidget(actionBar);
 
+}
+
+int ExistingInstancePage::nextId() const
+{
+    if (syncer->getStepNum() == 0)
+    {
+
+        return 2;
+    } else
+    {
+        return QWizardPage::nextId();
+    }
+
+}
+
+bool ExistingInstancePage::validatePage()
+{
+    if (syncer->getStepNum() == 0)
+    {
+        syncer->startSync();
+        return true;
+    }
+    return true;
 }
