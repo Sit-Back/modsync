@@ -13,7 +13,8 @@ class LoaderInstaller : public QObject
     LoaderInstaller(QString loaderID, QString loaderCMD);
     void downloadLoader() const;
     void installLoader() const;
-    bool addProfile() const;
+    void addProfile() const;
+    static bool removeProfile() ;
     bool loaderVersionExists() const;
 
 private:

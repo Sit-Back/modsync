@@ -37,6 +37,7 @@ ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
     connect(removeButton, &QPushButton::pressed, this, [this]()
     {
         Initialise::removeInstallDir();
+        LoaderInstaller::removeProfile();
         QMessageBox::information(nullptr, "Removed Profile", "Finished removing profile.");
         removeButton->setDisabled(true);
     });

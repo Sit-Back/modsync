@@ -64,7 +64,56 @@ void LoaderInstaller::installLoader() const
     });
 }
 
-bool LoaderInstaller::addProfile() const
+bool LoaderInstaller::removeProfile()
+{
+    static const QRegularExpression rs("\\s");
+
+    auto launcherJson = QFile(
+        MINECRAFTDIR.filePath("launcher_profiles.json"));
+
+    if (!launcherJson.open(QIODevice::ReadOnly))
+    {
+        throw std::runtime_error("Insufficient read permissions"
+                                 " to remove profile from launcher_profiles.json");
+    }
+
+    QString data = launcherJson.readAll();
+    data.remove(rs);
+    std::string modsyncFlag = "\"modsync\":{";
+    std::size_t modsyncFlagPos = data.toStdString().find(modsyncFlag);
+
+    if (modsyncFlagPos == std::string::npos)
+    {
+        return false;
+    }
+
+
+    int finishOffset = 0;
+    for (int i = modsyncFlagPos; i < data.size(); i++)
+    {
+        finishOffset++;
+        if (data[i] == "}" )
+        {
+            finishOffset++;
+            break;
+        }
+    }
+    data.remove(modsyncFlagPos, finishOffset);
+    launcherJson.close();
+
+    if (!launcherJson.open(QIODevice::ReadWrite | QIODevice::Truncate))
+    {
+        throw std::runtime_error("Insufficient read permissions"
+                                 " to remove profile from launcher_profiles.json");
+    }
+
+    launcherJson.write(data.toUtf8());
+    launcherJson.close();
+
+    return true;
+}
+
+void LoaderInstaller::addProfile() const
 {
     QString profileString = R"(
     "modsync": {
@@ -83,41 +132,27 @@ bool LoaderInstaller::addProfile() const
     auto profiles = QFile(MINECRAFTDIR.filePath("launcher_profiles.json"));
     if (!profiles.exists())
     {
-        qCritical() << "launcher_profiles.json does not exist";
-        return false;
+        throw std::runtime_error("launcher_profiles.json does not exist");
     }
+
+    if (removeProfile())
+    {
+        qInfo() << "Existing launcher profile found, attempting replace";
+    }
+
     if (profiles.open(QIODevice::ReadOnly))
     {
         QString data = profiles.readAll();
         data.remove(rs);
-        std::string modsyncFlag = "\"modsync\":{";
-        std::size_t modsyncFlagPos = data.toStdString().find(modsyncFlag);
 
-        if (modsyncFlagPos != std::string::npos)
-        {
-            qInfo() << "Existing launcher profile found, attempting replace";
-
-            int finishOffset = 0;
-            for (int i = modsyncFlagPos; i < data.size(); i++)
-            {
-                finishOffset++;
-                if (data[i] == "}" )
-                {
-                    finishOffset++;
-                    break;
-                }
-            }
-            data.remove(modsyncFlagPos, finishOffset);
-        }
 
         std::string profilesFlag = "\"profiles\":{";
         std::size_t profilesFlagPos = data.toStdString().find(profilesFlag);
 
         if (profilesFlagPos == std::string::npos)
         {
-            qCritical() << "Corrupt launcher_profiles.json";
             profiles.close();
-            return false;
+            throw std::runtime_error("Corrupt launcher_profiles.json");
         }
 
         data.insert(profilesFlagPos + profilesFlag.size(), profileString);
@@ -127,18 +162,15 @@ bool LoaderInstaller::addProfile() const
             profiles.write(data.toUtf8());
             profiles.close();
             qInfo() << "Launcher profile added successfully";
-            return true;
         }
         else
         {
-            qCritical() << "Cannot write to launcher_profiles.json";
-            return false;
+            throw std::runtime_error("Cannot write to launcher_profiles.json");
         }
     }
     else
     {
-        qCritical() << "Insufficient permissions to read from launcher_profiles.json";
-        return false;
+        throw std::runtime_error("Insufficient permissions to read from launcher_profiles.json");
     }
 }
 

@@ -18,26 +18,37 @@ void SyncClient::startSync()
 {
     fileSyncer->removeExtras();
     fileSyncer->downloadMods();
-    loaderInstaller->downloadLoader();
-
-    connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
-    {
-        emit finishStep();
-        loaderInstaller->installLoader();
-
-        connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
-        {
-            emit finishStep();
-        });
-    });
 
     connect(fileSyncer, &FileSyncer::modDownloaded, this, [this]()
     {
         emit finishStep();
     });
+
+    if (!loaderInstaller->loaderVersionExists())
+    {
+        loaderInstaller->downloadLoader();
+
+        connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
+        {
+            emit finishStep();
+            loaderInstaller->installLoader();
+
+            connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
+            {
+                emit finishStep();
+            });
+        });
+
+    }
+
+    loaderInstaller->addProfile();
 }
 
 int SyncClient::getStepNum() const
 {
+    if (loaderInstaller->loaderVersionExists())
+    {
+        return fileSyncer->modsToDownloadCount();
+    }
     return fileSyncer->modsToDownloadCount() + 2;
 }
