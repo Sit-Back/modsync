@@ -16,9 +16,10 @@ LoaderInstaller::LoaderInstaller(QString loaderID, QString loaderCMD) :
 loaderID(std::move(loaderID)),
 silentInstallCMD(std::move(loaderCMD))
 {
-    silentInstallCMD = silentInstallCMD.arg(
-        MINECRAFTDIR.absolutePath(),
-        PROFILEDIR.filePath("loader.jar"));
+    silentInstallCMD = silentInstallCMD.replace("%minecraft",
+        MINECRAFTDIR.absolutePath());
+    silentInstallCMD = silentInstallCMD.replace("%loader",
+        QDir::toNativeSeparators(PROFILEDIR.filePath("loader.jar")));
 }
 
 void LoaderInstaller::downloadLoader() const
@@ -125,7 +126,13 @@ void LoaderInstaller::addProfile() const
       "icon": "Dirt",
       "type": "custom"
     },)";
-    profileString = profileString.arg(loaderID, PROFILEDIR.path());
+    QString gameDir = QDir::toNativeSeparators(PROFILEDIR.path());
+#ifdef Q_OS_WIN
+    gameDir = gameDir.replace("\\","\\\\");
+#endif
+    profileString = profileString.arg(loaderID, gameDir);
+
+
     static const QRegularExpression rs("\\s");
     profileString.remove(rs);
 
