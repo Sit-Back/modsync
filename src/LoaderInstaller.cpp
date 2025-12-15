@@ -95,7 +95,10 @@ bool LoaderInstaller::removeProfile()
         finishOffset++;
         if (data[i] == "}" )
         {
-            finishOffset++;
+            if (data[i + 1] == ',')
+            {
+                finishOffset++;
+            }
             break;
         }
     }
