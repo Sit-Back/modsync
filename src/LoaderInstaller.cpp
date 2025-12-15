@@ -179,8 +179,16 @@ bool LoaderInstaller::loaderVersionExists() const
     QDir versionsPath(MINECRAFTDIR);
     versionsPath.cd("versions");
     QStringList versions = versionsPath.entryList(QDir::Dirs);
-    return std::any_of(versions.begin(), versions.end(), [this](const QString& version)
+    if (std::any_of(versions.begin(), versions.end(), [this](const QString& version)
     {
         return version == loaderID;
-    });
+    }))
+    {
+        qInfo() << "Loader found.";
+        return true;
+    } else
+    {
+        qInfo() << "No loader found.";
+        return false;
+    }
 }
