@@ -81,16 +81,20 @@ bool LoaderInstaller::removeProfile()
     QString data = launcherJson.readAll();
     data.remove(rs);
     std::string modsyncFlag = "\"modsync\":{";
-    std::size_t modsyncFlagPos = data.toStdString().find(modsyncFlag);
+    std::size_t startOffset = data.toStdString().find(modsyncFlag);
 
-    if (modsyncFlagPos == std::string::npos)
+    if (startOffset == std::string::npos)
     {
         return false;
     }
 
+    if (data[startOffset - 1] != '{')
+    {
+        startOffset--;
+    }
 
     int finishOffset = 0;
-    for (int i = modsyncFlagPos; i < data.size(); i++)
+    for (int i = startOffset; i < data.size(); i++)
     {
         finishOffset++;
         if (data[i] == "}" )
@@ -102,7 +106,7 @@ bool LoaderInstaller::removeProfile()
             break;
         }
     }
-    data.remove(modsyncFlagPos, finishOffset);
+    data.remove(startOffset, finishOffset);
     launcherJson.close();
 
     if (!launcherJson.open(QIODevice::ReadWrite | QIODevice::Truncate))
