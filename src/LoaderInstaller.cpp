@@ -16,8 +16,9 @@ LoaderInstaller::LoaderInstaller(QString loaderID, QString loaderCMD) :
 loaderID(std::move(loaderID)),
 silentInstallCMD(std::move(loaderCMD))
 {
-    silentInstallCMD = silentInstallCMD.arg(
-        MINECRAFTDIR.absolutePath(),
+    silentInstallCMD = silentInstallCMD.replace("%minecraft",
+        MINECRAFTDIR.absolutePath());
+    silentInstallCMD = silentInstallCMD.replace("%loader",
         QDir::toNativeSeparators(PROFILEDIR.filePath("loader.jar")));
 }
 
@@ -80,25 +81,32 @@ bool LoaderInstaller::removeProfile()
     QString data = launcherJson.readAll();
     data.remove(rs);
     std::string modsyncFlag = "\"modsync\":{";
-    std::size_t modsyncFlagPos = data.toStdString().find(modsyncFlag);
+    std::size_t startOffset = data.toStdString().find(modsyncFlag);
 
-    if (modsyncFlagPos == std::string::npos)
+    if (startOffset == std::string::npos)
     {
         return false;
     }
 
+    if (data[startOffset - 1] != '{')
+    {
+        startOffset--;
+    }
 
     int finishOffset = 0;
-    for (int i = modsyncFlagPos; i < data.size(); i++)
+    for (int i = startOffset; i < data.size(); i++)
     {
         finishOffset++;
         if (data[i] == "}" )
         {
-            finishOffset++;
+            if (data[i + 1] == ',')
+            {
+                finishOffset++;
+            }
             break;
         }
     }
-    data.remove(modsyncFlagPos, finishOffset);
+    data.remove(startOffset, finishOffset);
     launcherJson.close();
 
     if (!launcherJson.open(QIODevice::ReadWrite | QIODevice::Truncate))
@@ -125,7 +133,13 @@ void LoaderInstaller::addProfile() const
       "icon": "Dirt",
       "type": "custom"
     },)";
-    profileString = profileString.arg(loaderID, QDir::toNativeSeparators(PROFILEDIR.absolutePath()));
+    QString gameDir = QDir::toNativeSeparators(PROFILEDIR.path());
+#ifdef Q_OS_WIN
+    gameDir = gameDir.replace("\\","\\\\");
+#endif
+    profileString = profileString.arg(loaderID, gameDir);
+
+
     static const QRegularExpression rs("\\s");
     profileString.remove(rs);
 
