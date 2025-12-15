@@ -18,7 +18,7 @@ silentInstallCMD(std::move(loaderCMD))
 {
     silentInstallCMD = silentInstallCMD.arg(
         MINECRAFTDIR.absolutePath(),
-        PROFILEDIR.filePath("loader.jar"));
+        QDir::toNativeSeparators(PROFILEDIR.filePath("loader.jar")));
 }
 
 void LoaderInstaller::downloadLoader() const
@@ -125,7 +125,7 @@ void LoaderInstaller::addProfile() const
       "icon": "Dirt",
       "type": "custom"
     },)";
-    profileString = profileString.arg(loaderID, PROFILEDIR.path());
+    profileString = profileString.arg(loaderID, QDir::toNativeSeparators(PROFILEDIR.absolutePath()));
     static const QRegularExpression rs("\\s");
     profileString.remove(rs);
 
