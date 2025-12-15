@@ -25,7 +25,7 @@ void Downloader::download(const QUrl& url, const QDir& path)
 
     bool renamed = false;
 
-    QObject::connect(reply, &QNetworkReply::finished, [this, reply, file]()
+    connect(reply, &QNetworkReply::finished, [this, reply, file]()
     {
         //Cleanup
         file->close();
@@ -33,7 +33,7 @@ void Downloader::download(const QUrl& url, const QDir& path)
         emit downloadFinished();
 
     });
-    QObject::connect(reply, &QNetworkReply::readyRead, [reply, file]()
+    connect(reply, &QNetworkReply::readyRead, [reply, file]()
     {
         file->write(reply->readAll());
     });

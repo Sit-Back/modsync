@@ -1,7 +1,4 @@
 #pragma once
-#include <QDir>
-#include <QNetworkAccessManager>
-
 #include "FileSyncer.h"
 #include "LoaderInstaller.h"
 #include "SyncMetadata.h"

@@ -51,7 +51,7 @@ void FileSyncer::downloadMod(const QString& modName)
 
     bool renamed = false;
 
-    QObject::connect(reply, &QNetworkReply::finished, [this, reply, file]()
+    connect(reply, &QNetworkReply::finished, [this, reply, file]()
     {
         //Cleanup
         file->close();
@@ -59,7 +59,7 @@ void FileSyncer::downloadMod(const QString& modName)
         emit modDownloaded();
 
     });
-    QObject::connect(reply, &QNetworkReply::readyRead, [reply, file]()
+    connect(reply, &QNetworkReply::readyRead, [reply, file]()
     {
         file->write(reply->readAll());
     });

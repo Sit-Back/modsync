@@ -16,8 +16,9 @@ SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer)
 
 void SyncClient::startSync()
 {
-    fileSyncer->removeExtras();
     fileSyncer->downloadMods();
+    fileSyncer->removeExtras();
+
 
     connect(fileSyncer, &FileSyncer::modDownloaded, this, [this]()
     {

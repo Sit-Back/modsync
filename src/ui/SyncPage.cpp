@@ -1,4 +1,6 @@
 #include "SyncPage.h"
+
+#include <QApplication>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QComboBox>
@@ -52,32 +54,13 @@ void SyncPage::sync()
             }
         });
 
-    syncer->startSync();
-
-    /*if (!SyncClient::versionExists(syncer.getMetadata().loaderID))
+    try
     {
-        //log if version exists
-        syncer.downloadLoader();
-        downloadProgressBar->setMaximum(downloadProgressBar->maximum()+1);
-
-        connect(&syncer, &SyncClient::loaderDownloadFinished, this, [this]()
-        {
-            downloadProgressBar->setValue(static_cast<int>(downloadProgressBar->value() + 1));
-            loaderDownloadComplete = true;
-            emit completeChanged();
-        });
-    } else
-    {
-        loaderDownloadComplete = true;
-        emit completeChanged();
+        syncer->startSync();
     }
-
-    //5. Add profile to launcher
-    bool profileAddSuccess = syncer.addProfile();
-    if (!profileAddSuccess)
+    catch (const std::runtime_error& e)
     {
-        QMessageBox::critical(nullptr, "Launcher Profile Add Failed",
-                              "Could not add launcher profile! Ensure that the file"
-                              " exists, is both readable and writable and is not corrupt.");
-    }*/
+        QMessageBox::critical(nullptr, "Sync Error",e.what());
+        QApplication::quit();
+    }
 }
