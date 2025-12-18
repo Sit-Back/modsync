@@ -3,6 +3,8 @@
 #include <QMainWindow>
 #include <QWizardPage>
 
+#include "../SyncAction.h"
+
 class SyncClient;
 
 class ExistingInstancePage final : public QWizardPage
@@ -10,11 +12,11 @@ class ExistingInstancePage final : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ExistingInstancePage(SyncClient* syncer,QWidget* parent = nullptr);
+    explicit ExistingInstancePage(SyncAction* syncer,QWidget* parent = nullptr);
     int nextId() const override;
     bool validatePage() override;
 
 private:
     QPushButton* removeButton;
-    SyncClient* syncer;
+    SyncAction* syncer;
 };

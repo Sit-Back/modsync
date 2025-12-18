@@ -3,7 +3,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-WelcomePage::WelcomePage(SyncClient* syncer, QWidget* parent) : syncer(syncer)
+WelcomePage::WelcomePage(SyncAction* syncer, QWidget* parent) : syncer(syncer)
 {
 
     setTitle("Welcome to Modsync!");
@@ -23,7 +23,7 @@ WelcomePage::WelcomePage(SyncClient* syncer, QWidget* parent) : syncer(syncer)
 
 int WelcomePage::nextId() const
 {
-    if (syncer->getStepNum() == 0)
+    if (syncer->getStepNumber() == 0)
     {
         return 2;
     }
@@ -33,9 +33,9 @@ int WelcomePage::nextId() const
 
 bool WelcomePage::validatePage()
 {
-    if (syncer->getStepNum() == 0)
+    if (syncer->getStepNumber() == 0)
     {
-        syncer->startSync();
+        syncer->startAction();
         return true;
     }
     return true;

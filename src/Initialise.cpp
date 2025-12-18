@@ -152,10 +152,10 @@ QStringList Initialise::getModsToRemove(const QStringList& mods)
     return modNamesRemove;
 }
 
-QFuture<SyncClient*> Initialise::createSyncAction()
+QFuture<SyncAction*> Initialise::createSyncAction()
 {
-    auto promise = QSharedPointer<QPromise<SyncClient*>>::create();
-    QFuture<SyncClient*> future = promise->future();
+    auto promise = QSharedPointer<QPromise<SyncAction*>>::create();
+    QFuture<SyncAction*> future = promise->future();
 
     auto watcher = new QFutureWatcher<SyncMetadata>;
     QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher, promise]()

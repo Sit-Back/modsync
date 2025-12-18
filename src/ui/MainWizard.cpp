@@ -9,7 +9,7 @@
 #include "WelcomePage.h"
 #include "../Initialise.h"
 
-MainWizard::MainWizard(SyncClient* syncer) : syncer(syncer)
+MainWizard::MainWizard(SyncAction* syncer) : syncer(syncer)
 {
     setOptions(QWizard::NoCancelButtonOnLastPage);
 

@@ -19,7 +19,7 @@ class Initialise
     static bool isInstallDirExist();
     static bool isMinecraftDirExist();
 
-    static QFuture<SyncClient*> createSyncAction();
+    static QFuture<SyncAction*> createSyncAction();
 private:
     static QFuture<SyncMetadata> fetchSyncMetadata();
     static QStringList getModsToDownload(const QStringList& mods);

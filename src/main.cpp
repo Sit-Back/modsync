@@ -30,12 +30,12 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto watcher = new QFutureWatcher<SyncClient*>;
-    QObject::connect(watcher, &QFutureWatcher<SyncClient*>::finished, [watcher]()
+    auto watcher = new QFutureWatcher<SyncAction*>;
+    QObject::connect(watcher, &QFutureWatcher<SyncAction*>::finished, [watcher]()
     {
         try
         {
-            SyncClient* syncer = watcher->future().result();
+            SyncAction* syncer = watcher->future().result();
             auto wizard = new MainWizard(syncer);
             wizard->show();
         }
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
         }
     });
 
-    QFuture<SyncClient*> syncerFuture = Initialise::createSyncAction();
+    QFuture<SyncAction*> syncerFuture = Initialise::createSyncAction();
     watcher->setFuture(syncerFuture);
 
     return a.exec();
