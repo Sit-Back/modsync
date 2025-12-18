@@ -1,11 +1,7 @@
 #include "SyncClient.h"
 #include <QNetworkReply>
 #include <QMessageBox>
-#include <QDebug>
-#include <qregularexpression.h>
 #include <QStandardPaths>
-
-#include "Downloader.h"
 #include <QProcess>
 
 
@@ -15,7 +11,7 @@ SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer)
     calcStepNum();
 }
 
-void SyncClient::startSync()
+void SyncClient::startAction()
 {
     fileSyncer->downloadMods();
     fileSyncer->removeExtras();
@@ -46,7 +42,7 @@ void SyncClient::startSync()
     loaderInstaller->addProfile();
 }
 
-int SyncClient::getStepNum() const
+int SyncClient::getStepNumber() const
 {
     return stepNum;
 }
