@@ -14,30 +14,24 @@ CreateInstanceAction::CreateInstanceAction(LoaderInstaller* loaderInstaller, Fil
 void CreateInstanceAction::startAction()
 {
     fileSyncer->downloadMods();
-    fileSyncer->removeExtras();
-
 
     connect(fileSyncer, &FileSyncer::modDownloaded, this, [this]()
     {
         emit finishStep();
     });
 
-    if (!loaderInstaller->loaderVersionExists())
-    {
-        loaderInstaller->downloadLoader();
+    loaderInstaller->downloadLoader();
 
-        connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
+    connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
+    {
+        emit finishStep();
+        loaderInstaller->installLoader();
+
+        connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
         {
             emit finishStep();
-            loaderInstaller->installLoader();
-
-            connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
-            {
-                emit finishStep();
-            });
         });
-
-    }
+    });
 
     loaderInstaller->addProfile();
 }
@@ -49,11 +43,5 @@ int CreateInstanceAction::getStepNumber() const
 
 void CreateInstanceAction::calcStepNum()
 {
-    if (loaderInstaller->loaderVersionExists())
-    {
-        stepNum = fileSyncer->modsToDownloadCount();
-    } else
-    {
-        stepNum = fileSyncer->modsToDownloadCount() + 2;
-    }
+    stepNum = fileSyncer->modsToDownloadCount() + 2;
 }
