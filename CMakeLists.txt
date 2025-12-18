@@ -37,6 +37,8 @@ qt_add_executable(modsync
         src/FileSyncer.cpp
         src/FileSyncer.h
         src/SyncAction.h
+        src/UpdateModsAction.cpp
+        src/UpdateModsAction.h
 )
 
 target_link_libraries(modsync

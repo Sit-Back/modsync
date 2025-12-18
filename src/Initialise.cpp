@@ -13,6 +13,8 @@
 #include <QPromise>
 #include <QSharedPointer>
 
+#include "UpdateModsAction.h"
+
 bool Initialise::createProfileDir()
 {
     return QDir().mkpath(MODSDIR.path());
@@ -162,11 +164,20 @@ QFuture<SyncAction*> Initialise::createSyncAction()
     {
         try
         {
-            SyncMetadata metadata = watcher->future().result();
-            auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
-            auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
-            promise->addResult(new CreateInstanceAction(loader, file));
-            promise->finish();
+            if (PROFILEDIR.exists())
+            {
+                SyncMetadata metadata = watcher->future().result();
+                auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
+                promise->addResult(new UpdateModsAction(file));
+                promise->finish();
+            } else {
+                SyncMetadata metadata = watcher->future().result();
+                auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
+                auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
+                promise->addResult(new CreateInstanceAction(loader, file));
+                promise->finish();
+            }
+
         }
         catch (const MetadataFetchError& e)
         {
