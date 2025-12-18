@@ -14,7 +14,7 @@
 #include "../Locations.h"
 #include <QGroupBox>
 
-ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
+ExistingInstancePage::ExistingInstancePage(SyncAction* syncer, QWidget* parent)
     : syncer(syncer)
 {
     setTitle("Existing Instance Found!");
@@ -69,7 +69,7 @@ ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
 
 int ExistingInstancePage::nextId() const
 {
-    if (syncer->getStepNum() == 0)
+    if (syncer->getStepNumber() == 0)
     {
         return 2;
     }
@@ -81,9 +81,9 @@ int ExistingInstancePage::nextId() const
 
 bool ExistingInstancePage::validatePage()
 {
-    if (syncer->getStepNum() == 0)
+    if (syncer->getStepNumber() == 0)
     {
-        syncer->startSync();
+        syncer->startAction();
         return true;
     }
     return true;

@@ -9,7 +9,7 @@
 
 #include "../Initialise.h"
 
-SyncPage::SyncPage(SyncClient* syncer, QWidget* parent)
+SyncPage::SyncPage(SyncAction* syncer, QWidget* parent)
     : QWizardPage(parent), syncer(syncer)
 {
     setTitle("Syncing...");
@@ -34,21 +34,21 @@ void SyncPage::initializePage()
 
 bool SyncPage::isComplete() const
 {
-    return progress >= syncer->getStepNum();
+    return progress >= syncer->getStepNumber();
 }
 
 
 void SyncPage::sync()
 {
-    downloadProgressBar->setMaximum(syncer->getStepNum());
+    downloadProgressBar->setMaximum(syncer->getStepNumber());
     downloadProgressBar->setValue(0);
 
-    connect(syncer, &SyncClient::finishStep, this, [this]()
+    connect(syncer, &CreateInstanceAction::finishStep, this, [this]()
         {
             progress++;
             downloadProgressBar->setValue(progress);
 
-            if (progress >= syncer->getStepNum())
+            if (progress >= syncer->getStepNumber())
             {
                 emit completeChanged();
             }
@@ -56,7 +56,7 @@ void SyncPage::sync()
 
     try
     {
-        syncer->startSync();
+        syncer->startAction();
     }
     catch (const std::runtime_error& e)
     {

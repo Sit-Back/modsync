@@ -2,10 +2,10 @@
 
 #include <QPushButton>
 #include <QWizardPage>
-#include "../SyncClient.h"
+#include "../CreateInstanceAction.h"
 
 
-class SyncClient;
+class CreateInstanceAction;
 
 class FinishingUpPage : public QWizardPage
 {

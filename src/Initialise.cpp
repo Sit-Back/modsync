@@ -5,12 +5,15 @@
 #include "Initialise.h"
 
 #include <QDir>
+#include <QFutureWatcher>
 #include <QNetworkReply>
 #include <QStandardPaths>
 #include "Locations.h"
 #include <QObject>
 #include <QPromise>
 #include <QSharedPointer>
+
+#include "UpdateModsAction.h"
 
 bool Initialise::createProfileDir()
 {
@@ -77,7 +80,8 @@ QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
             {
                 promise->setException(std::make_exception_ptr(MetadataFetchError("Malformed metadata")));
                 promise->finish();
-            } else
+            }
+            else
             {
                 loaderID = loaderID.slice(3);
                 loaderCMD = loaderCMD.slice(3);
@@ -150,9 +154,40 @@ QStringList Initialise::getModsToRemove(const QStringList& mods)
     return modNamesRemove;
 }
 
-SyncClient* Initialise::createSyncPackage(SyncMetadata metadata)
+QFuture<SyncAction*> Initialise::createSyncAction()
 {
-    auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
-    auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
-    return new SyncClient(loader, file);
+    auto promise = QSharedPointer<QPromise<SyncAction*>>::create();
+    QFuture<SyncAction*> future = promise->future();
+
+    auto watcher = new QFutureWatcher<SyncMetadata>;
+    QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher, promise]()
+    {
+        try
+        {
+            if (PROFILEDIR.exists())
+            {
+                SyncMetadata metadata = watcher->future().result();
+                auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
+                promise->addResult(new UpdateModsAction(file));
+                promise->finish();
+            } else {
+                SyncMetadata metadata = watcher->future().result();
+                auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
+                auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
+                promise->addResult(new CreateInstanceAction(loader, file));
+                promise->finish();
+            }
+
+        }
+        catch (const MetadataFetchError& e)
+        {
+            promise->setException(std::make_exception_ptr(e));
+            promise->finish();
+        }
+    });
+
+    QFuture<SyncMetadata> metatdata = Initialise::fetchSyncMetadata();
+    watcher->setFuture(metatdata);
+
+    return future;
 }

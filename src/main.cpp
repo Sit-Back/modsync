@@ -30,24 +30,24 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto watcher = new QFutureWatcher<SyncMetadata>;
-    QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher]()
+    auto watcher = new QFutureWatcher<SyncAction*>;
+    QObject::connect(watcher, &QFutureWatcher<SyncAction*>::finished, [watcher]()
     {
         try
         {
-            SyncMetadata metadataresult = watcher->future().result();
-            SyncClient* syncer = Initialise::createSyncPackage(metadataresult);
+            SyncAction* syncer = watcher->future().result();
             auto wizard = new MainWizard(syncer);
             wizard->show();
         }
-        catch (const MetadataFetchError &e)
+        catch (const MetadataFetchError& e)
         {
-            QMessageBox::critical(nullptr, "Error Fetching Sync Metadata",e.what());
+            QMessageBox::critical(nullptr, "Error Fetching Sync Metadata", e.what());
             QApplication::quit();
         }
     });
 
-    QFuture<SyncMetadata> metatdata = Initialise::fetchSyncMetadata();
-    watcher->setFuture(metatdata);
+    QFuture<SyncAction*> syncerFuture = Initialise::createSyncAction();
+    watcher->setFuture(syncerFuture);
+
     return a.exec();
 }

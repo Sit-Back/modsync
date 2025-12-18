@@ -1,32 +1,25 @@
-#include "SyncClient.h"
+#include "CreateInstanceAction.h"
 #include <QNetworkReply>
 #include <QMessageBox>
-#include <QDebug>
-#include <qregularexpression.h>
 #include <QStandardPaths>
-
-#include "Downloader.h"
 #include <QProcess>
+#include "LoaderInstaller.h"
 
 
-SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
+CreateInstanceAction::CreateInstanceAction(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
     loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
-{
-    calcStepNum();
-}
+{}
 
-void SyncClient::startSync()
+void CreateInstanceAction::startAction()
 {
     fileSyncer->downloadMods();
-    fileSyncer->removeExtras();
-
 
     connect(fileSyncer, &FileSyncer::modDownloaded, this, [this]()
     {
         emit finishStep();
     });
 
-    if (!loaderInstaller->loaderVersionExists())
+    if (loaderInstaller->loaderVersionExists())
     {
         loaderInstaller->downloadLoader();
 
@@ -46,18 +39,7 @@ void SyncClient::startSync()
     loaderInstaller->addProfile();
 }
 
-int SyncClient::getStepNum() const
+int CreateInstanceAction::getStepNumber() const
 {
-    return stepNum;
-}
-
-void SyncClient::calcStepNum()
-{
-    if (loaderInstaller->loaderVersionExists())
-    {
-        stepNum = fileSyncer->modsToDownloadCount();
-    } else
-    {
-        stepNum = fileSyncer->modsToDownloadCount() + 2;
-    }
+    return fileSyncer->modsToDownloadCount() + 2;
 }

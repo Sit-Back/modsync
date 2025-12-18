@@ -1,13 +1,13 @@
 #pragma once
 #include <QWizard>
 
-#include "../SyncClient.h"
+#include "../CreateInstanceAction.h"
 
 class MainWizard final : public QWizard
 {
 public:
-    MainWizard(SyncClient* syncer);
+    MainWizard(SyncAction* syncer);
 
 private:
-    SyncClient* syncer;
+    SyncAction* syncer;
 };
