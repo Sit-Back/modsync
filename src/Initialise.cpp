@@ -59,6 +59,7 @@ QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
     QUrl metadataURL = ROOTURL;
     metadataURL.setPath("/meta");
     auto request = QNetworkRequest(metadataURL);
+    request.setTransferTimeout(4000);
 
     QNetworkReply* reply = networkManager->get(request);
 
