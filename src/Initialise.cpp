@@ -5,6 +5,7 @@
 #include "Initialise.h"
 
 #include <QDir>
+#include <QFutureWatcher>
 #include <QNetworkReply>
 #include <QStandardPaths>
 #include "Locations.h"
@@ -150,9 +151,23 @@ QStringList Initialise::getModsToRemove(const QStringList& mods)
     return modNamesRemove;
 }
 
-SyncClient* Initialise::createSyncPackage(SyncMetadata metadata)
+QFuture<SyncClient*> Initialise::createSyncAction()
 {
-    auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
-    auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
-    return new SyncClient(loader, file);
+    auto promise = QSharedPointer<QPromise<SyncClient*>>::create();
+    QFuture<SyncClient*> future = promise->future();
+
+    auto watcher = new QFutureWatcher<SyncMetadata>;
+    QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher, promise]()
+    {
+            SyncMetadata metadata = watcher->future().result();
+            auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
+            auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
+            promise->addResult(new SyncClient(loader, file));
+            promise->finish();
+    });
+
+    QFuture<SyncMetadata> metatdata = Initialise::fetchSyncMetadata();
+    watcher->setFuture(metatdata);
+
+    return future;
 }
