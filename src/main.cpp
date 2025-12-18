@@ -33,9 +33,17 @@ int main(int argc, char* argv[])
     auto watcher = new QFutureWatcher<SyncClient*>;
     QObject::connect(watcher, &QFutureWatcher<SyncClient*>::finished, [watcher]()
     {
+        try
+        {
             SyncClient* syncer = watcher->future().result();
             auto wizard = new MainWizard(syncer);
             wizard->show();
+        }
+        catch (const MetadataFetchError& e)
+        {
+            QMessageBox::critical(nullptr, "Error Fetching Sync Metadata", e.what());
+            QApplication::quit();
+        }
     });
 
     QFuture<SyncClient*> syncerFuture = Initialise::createSyncAction();

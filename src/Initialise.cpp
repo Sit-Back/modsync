@@ -78,7 +78,8 @@ QFuture<SyncMetadata> Initialise::fetchSyncMetadata()
             {
                 promise->setException(std::make_exception_ptr(MetadataFetchError("Malformed metadata")));
                 promise->finish();
-            } else
+            }
+            else
             {
                 loaderID = loaderID.slice(3);
                 loaderCMD = loaderCMD.slice(3);
@@ -159,11 +160,19 @@ QFuture<SyncClient*> Initialise::createSyncAction()
     auto watcher = new QFutureWatcher<SyncMetadata>;
     QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher, promise]()
     {
+        try
+        {
             SyncMetadata metadata = watcher->future().result();
             auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
             auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
             promise->addResult(new SyncClient(loader, file));
             promise->finish();
+        }
+        catch (const MetadataFetchError& e)
+        {
+            promise->setException(std::make_exception_ptr(e));
+            promise->finish();
+        }
     });
 
     QFuture<SyncMetadata> metatdata = Initialise::fetchSyncMetadata();
