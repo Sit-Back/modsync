@@ -12,6 +12,7 @@
 #include "SyncPage.h"
 #include "../Initialise.h"
 #include "../Locations.h"
+#include <QGroupBox>
 
 ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
     : syncer(syncer)
@@ -29,11 +30,11 @@ ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
         " add a '!' to the start of the file names of custom mods (e.g. !test.jar).");
     welcome->setWordWrap(true);
 
-    auto* actionBar = new QWidget;
-    auto* actionBarLayout = new QHBoxLayout;
+    auto* actionBar = new QGroupBox("Instance Tools");
+    auto* actionBarLayout = new QGridLayout(actionBar);
     actionBar->setLayout(actionBarLayout);
 
-    removeButton = new QPushButton("Remove Current Instance");
+    removeButton = new QPushButton("Remove");
     connect(removeButton, &QPushButton::pressed, this, [this]()
     {
         auto removeProfileWarning = new QMessageBox();
