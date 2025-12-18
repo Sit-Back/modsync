@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QProcess>
+#include "LoaderInstaller.h"
 
 
 CreateInstanceAction::CreateInstanceAction(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
@@ -18,18 +19,22 @@ void CreateInstanceAction::startAction()
         emit finishStep();
     });
 
-    loaderInstaller->downloadLoader();
-
-    connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
+    if (loaderInstaller->loaderVersionExists())
     {
-        emit finishStep();
-        loaderInstaller->installLoader();
+        loaderInstaller->downloadLoader();
 
-        connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
+        connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
         {
             emit finishStep();
+            loaderInstaller->installLoader();
+
+            connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
+            {
+                emit finishStep();
+            });
         });
-    });
+
+    }
 
     loaderInstaller->addProfile();
 }
