@@ -27,6 +27,8 @@ MainWizard::MainWizard(SyncAction* syncer) : syncer(syncer)
     QWizardPage* finishing = new FinishingUpPage();
     addPage(finishing);
 
+    setMinimumHeight(400);
+
     setWindowTitle("Modsync");
 }
 
