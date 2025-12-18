@@ -14,7 +14,4 @@ public:
 private:
     LoaderInstaller* loaderInstaller;
     FileSyncer* fileSyncer;
-    int stepNum{};
-
-    void calcStepNum();
 };

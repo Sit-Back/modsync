@@ -7,9 +7,7 @@
 
 CreateInstanceAction::CreateInstanceAction(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
     loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
-{
-    calcStepNum();
-}
+{}
 
 void CreateInstanceAction::startAction()
 {
@@ -38,10 +36,5 @@ void CreateInstanceAction::startAction()
 
 int CreateInstanceAction::getStepNumber() const
 {
-    return stepNum;
-}
-
-void CreateInstanceAction::calcStepNum()
-{
-    stepNum = fileSyncer->modsToDownloadCount() + 2;
+    return fileSyncer->modsToDownloadCount() + 2;
 }
