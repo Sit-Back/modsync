@@ -12,6 +12,7 @@
 SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
     loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
 {
+    calcStepNum();
 }
 
 void SyncClient::startSync()
@@ -47,9 +48,16 @@ void SyncClient::startSync()
 
 int SyncClient::getStepNum() const
 {
+    return stepNum;
+}
+
+void SyncClient::calcStepNum()
+{
     if (loaderInstaller->loaderVersionExists())
     {
-        return fileSyncer->modsToDownloadCount();
+        stepNum = fileSyncer->modsToDownloadCount();
+    } else
+    {
+        stepNum = fileSyncer->modsToDownloadCount() + 2;
     }
-    return fileSyncer->modsToDownloadCount() + 2;
 }

@@ -15,6 +15,9 @@ public:
 private:
     LoaderInstaller* loaderInstaller;
     FileSyncer* fileSyncer;
+    int stepNum{};
+
+    void calcStepNum();
 
 signals:
     void finishStep() const;
