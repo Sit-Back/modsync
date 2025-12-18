@@ -14,7 +14,7 @@
 #include "../Locations.h"
 
 ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
-: syncer(syncer)
+    : syncer(syncer)
 {
     setTitle("Existing Instance Found!");
     auto* layout = new QVBoxLayout();
@@ -36,10 +36,21 @@ ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
     removeButton = new QPushButton("Remove Current Instance");
     connect(removeButton, &QPushButton::pressed, this, [this]()
     {
-        Initialise::removeInstallDir();
-        LoaderInstaller::removeProfile();
-        QMessageBox::information(nullptr, "Removed Profile", "Finished removing profile.");
-        QApplication::quit();
+        auto removeProfileWarning = new QMessageBox();
+        removeProfileWarning->setText("Are you sure you want to remove the current profile?");
+        removeProfileWarning->setInformativeText("This will remove all client data including binds,"
+                                                 " map data and video settings!");
+        removeProfileWarning->setIcon(QMessageBox::Warning);
+        removeProfileWarning->setStandardButtons(QMessageBox::Apply);
+        removeProfileWarning->show();
+        connect(removeProfileWarning, &QMessageBox::buttonClicked, [removeProfileWarning]()
+        {
+            removeProfileWarning->hide();
+            Initialise::removeInstallDir();
+            LoaderInstaller::removeProfile();
+            QMessageBox::information(nullptr, "Removed Profile", "Finished removing profile.");
+            QApplication::quit();
+        });
     });
 
     auto* browseButton = new QPushButton("Browse...");
@@ -53,20 +64,18 @@ ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
 
     layout->addWidget(welcome);
     layout->addWidget(actionBar);
-
 }
 
 int ExistingInstancePage::nextId() const
 {
     if (syncer->getStepNum() == 0)
     {
-
         return 2;
-    } else
+    }
+    else
     {
         return QWizardPage::nextId();
     }
-
 }
 
 bool ExistingInstancePage::validatePage()
