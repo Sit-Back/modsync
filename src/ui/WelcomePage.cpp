@@ -10,7 +10,7 @@ WelcomePage::WelcomePage(SyncClient* syncer, QWidget* parent) : syncer(syncer)
     auto* layout = new QVBoxLayout();
     setLayout(layout);
     setCommitPage(true);
-    setButtonText(QWizard::WizardButton::CommitButton, "Sync >");
+    setButtonText(QWizard::WizardButton::CommitButton, "Create >");
 
     auto* welcome = new QLabel("Modsync is a platform distributed by your server owner"
             " to streamline the installation and updating of mods."

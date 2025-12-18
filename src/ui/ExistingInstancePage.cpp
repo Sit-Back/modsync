@@ -21,7 +21,7 @@ ExistingInstancePage::ExistingInstancePage(SyncClient* syncer, QWidget* parent)
     auto* layout = new QVBoxLayout();
     setLayout(layout);
     setCommitPage(true);
-    setButtonText(QWizard::WizardButton::CommitButton, "Sync >");
+    setButtonText(QWizard::WizardButton::CommitButton, "Update >");
 
     auto* welcome = new QLabel("It seems you already have an instance of Modsync installed!"
         " If you with to update, continue to the next page."
