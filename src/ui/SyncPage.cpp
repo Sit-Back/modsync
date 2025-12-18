@@ -43,7 +43,7 @@ void SyncPage::sync()
     downloadProgressBar->setMaximum(syncer->getStepNumber());
     downloadProgressBar->setValue(0);
 
-    connect(syncer, &SyncClient::finishStep, this, [this]()
+    connect(syncer, &CreateInstanceAction::finishStep, this, [this]()
         {
             progress++;
             downloadProgressBar->setValue(progress);

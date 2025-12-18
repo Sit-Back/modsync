@@ -5,7 +5,7 @@
 #include <QWizardPage>
 
 #include "../Downloader.h"
-#include "../SyncClient.h"
+#include "../CreateInstanceAction.h"
 
 class SyncPage final : public QWizardPage
 {

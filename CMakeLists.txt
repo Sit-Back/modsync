@@ -17,8 +17,8 @@ qt_add_executable(modsync
         src/ui/ExistingInstancePage.h
         src/ui/MainWizard.cpp
         src/ui/MainWizard.h
-        src/SyncClient.cpp
-        src/SyncClient.h
+        src/CreateInstanceAction.cpp
+        src/CreateInstanceAction.h
         src/ui/SyncPage.cpp
         src/ui/SyncPage.h
         src/Downloader.cpp

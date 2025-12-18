@@ -5,7 +5,7 @@
 
 #include "../SyncAction.h"
 
-class SyncClient;
+class CreateInstanceAction;
 
 class ExistingInstancePage final : public QWizardPage
 {

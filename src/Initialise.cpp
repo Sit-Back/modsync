@@ -165,7 +165,7 @@ QFuture<SyncAction*> Initialise::createSyncAction()
             SyncMetadata metadata = watcher->future().result();
             auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
             auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
-            promise->addResult(new SyncClient(loader, file));
+            promise->addResult(new CreateInstanceAction(loader, file));
             promise->finish();
         }
         catch (const MetadataFetchError& e)

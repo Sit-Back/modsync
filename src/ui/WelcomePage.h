@@ -1,6 +1,6 @@
 #pragma once
 #include <QWizardPage>
-#include "../SyncClient.h"
+#include "../CreateInstanceAction.h"
 
 
 class WelcomePage : public QWizardPage

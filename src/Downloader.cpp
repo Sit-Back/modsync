@@ -1,7 +1,7 @@
 #include "Downloader.h"
 
 #include <QNetworkReply>
-#include "SyncClient.h"
+#include "CreateInstanceAction.h"
 #include <QFile>
 
 Downloader::Downloader()

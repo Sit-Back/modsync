@@ -1,7 +1,7 @@
 #pragma once
 #include <QWizard>
 
-#include "../SyncClient.h"
+#include "../CreateInstanceAction.h"
 
 class MainWizard final : public QWizard
 {

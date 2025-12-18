@@ -4,10 +4,10 @@
 #include "SyncAction.h"
 #include "SyncMetadata.h"
 
-class SyncClient final : public SyncAction
+class CreateInstanceAction final : public SyncAction
 {
 public:
-    SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer);
+    CreateInstanceAction(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer);
     void startAction() override;;
     [[nodiscard]] int getStepNumber() const override;
 

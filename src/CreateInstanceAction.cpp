@@ -1,17 +1,17 @@
-#include "SyncClient.h"
+#include "CreateInstanceAction.h"
 #include <QNetworkReply>
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QProcess>
 
 
-SyncClient::SyncClient(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
+CreateInstanceAction::CreateInstanceAction(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
     loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
 {
     calcStepNum();
 }
 
-void SyncClient::startAction()
+void CreateInstanceAction::startAction()
 {
     fileSyncer->downloadMods();
     fileSyncer->removeExtras();
@@ -42,12 +42,12 @@ void SyncClient::startAction()
     loaderInstaller->addProfile();
 }
 
-int SyncClient::getStepNumber() const
+int CreateInstanceAction::getStepNumber() const
 {
     return stepNum;
 }
 
-void SyncClient::calcStepNum()
+void CreateInstanceAction::calcStepNum()
 {
     if (loaderInstaller->loaderVersionExists())
     {

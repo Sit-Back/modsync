@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-#include "../SyncClient.h"
+#include "../CreateInstanceAction.h"
 
 FinishingUpPage::FinishingUpPage()
 {

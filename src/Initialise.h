@@ -4,7 +4,7 @@
 #pragma once
 #include <QFuture>
 
-#include "SyncClient.h"
+#include "CreateInstanceAction.h"
 #include "SyncMetadata.h"
 
 class Initialise
