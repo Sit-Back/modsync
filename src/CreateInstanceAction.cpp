@@ -19,22 +19,19 @@ void CreateInstanceAction::startAction()
         emit finishStep();
     });
 
-    if (loaderInstaller->loaderVersionExists())
-    {
-        loaderInstaller->downloadLoader();
+    loaderInstaller->downloadLoader();
 
-        connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
+    connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
+    {
+        emit finishStep();
+        loaderInstaller->installLoader();
+
+        connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
         {
             emit finishStep();
-            loaderInstaller->installLoader();
-
-            connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
-            {
-                emit finishStep();
-            });
         });
+    });
 
-    }
 
     loaderInstaller->addProfile();
 }
