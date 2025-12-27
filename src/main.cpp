@@ -5,13 +5,37 @@
 #include "Initialise.h"
 #include "Initialise.h"
 #include <QFutureWatcher>
+#include <QProgressDialog>
+#include <QObject>
 
 void initUI(SyncMetadata metadata)
 {
-    if (Initialise::isInstallDirExist())
+    if (!Initialise::isInstallDirExist())
     {
+        QMessageBox installPrompt;
+        installPrompt.setText("No modsync instance was found."
+                              " Would you like to create one?");
+        installPrompt.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        installPrompt.setDefaultButton(QMessageBox::Yes);
 
-        QMessageBox::critical(nullptr, "Exists", "Exists");
+        if (installPrompt.exec() == QMessageBox::Yes)
+        {
+            auto createInstance = new CreateInstanceAction(metadata);
+            QProgressDialog createProgress("Installing instance...",
+                "Cancel",
+                0,
+                createInstance->getStepNumber());
+
+            QObject::connect(createInstance, &CreateInstanceAction::finishStep, [&createProgress]()
+            {
+                createProgress.setValue(createProgress.value() + 1);
+            });
+
+            createInstance->startAction();
+            createProgress.exec();
+
+
+        }
     } else
     {
         QMessageBox::critical(nullptr, "None", "None");
