@@ -4,6 +4,7 @@
 #include <QStandardPaths>
 #include <QProcess>
 #include "LoaderInstaller.h"
+#include "Locations.h"
 
 
 CreateInstanceAction::CreateInstanceAction(SyncMetadata metadata) :
@@ -11,8 +12,15 @@ CreateInstanceAction::CreateInstanceAction(SyncMetadata metadata) :
     fileSyncer(metadata.modsToRemove, metadata.modsToDownload)
 {}
 
+bool CreateInstanceAction::createProfileDir()
+{
+    return QDir().mkpath(MODSDIR.path());
+}
+
+
 void CreateInstanceAction::startAction()
 {
+    createProfileDir();
     fileSyncer.downloadMods();
 
     connect(&fileSyncer, &FileSyncer::modDownloaded, this, [this]()

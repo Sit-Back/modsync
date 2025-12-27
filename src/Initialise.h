@@ -11,7 +11,6 @@ class Initialise
 {
     public:
     //Actions
-    static bool createProfileDir();
     static bool removeInstallDir();
 
     //Checks

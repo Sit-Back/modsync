@@ -15,11 +15,6 @@
 
 #include "UpdateModsAction.h"
 
-bool Initialise::createProfileDir()
-{
-    return QDir().mkpath(MODSDIR.path());
-}
-
 bool Initialise::isInstallDirExist()
 {
     return PROFILEDIR.exists();

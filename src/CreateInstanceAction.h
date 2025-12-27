@@ -12,6 +12,7 @@ public:
     [[nodiscard]] int getStepNumber() const override;
 
 private:
+    bool createProfileDir();
     LoaderInstaller loaderInstaller;
     FileSyncer fileSyncer;
 };
