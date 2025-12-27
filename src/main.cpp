@@ -22,15 +22,13 @@ void initUI(SyncMetadata metadata)
         {
             auto createInstance = new CreateInstanceAction(metadata);
             QProgressDialog createProgress("Installing instance...",
-                "Cancel",
+                nullptr,
                 0,
                 createInstance->getStepNumber()-1);
 
             QObject::connect(createInstance, &CreateInstanceAction::finishStep, [&createProgress]()
             {
-                qInfo() << createProgress.value();
                 createProgress.setValue(createProgress.value() + 1);
-                qInfo() << createProgress.value() << '/' << createProgress.maximum();
             });
 
             createInstance->startAction();
