@@ -1,14 +1,33 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QDebug>
-#include <QFuture>
-#include "Initialise.h"
 #include "Initialise.h"
 #include <QFutureWatcher>
 #include <QProgressDialog>
 #include <QObject>
+#include "InstanceTools.h"
 
-void initUI(SyncMetadata metadata)
+void install(const SyncMetadata& metadata)
+{
+    auto createInstance = new CreateInstanceAction(metadata);
+    QProgressDialog createProgress("Installing instance...",
+        nullptr,
+        0,
+        createInstance->getStepNumber()-1);
+
+    QObject::connect(createInstance, &CreateInstanceAction::finishStep, [&createProgress]()
+    {
+        createProgress.setValue(createProgress.value() + 1);
+    });
+
+    createInstance->startAction();
+    createProgress.exec();
+
+    auto* instanceToolsWindow = new InstanceTools();
+    instanceToolsWindow->show();
+}
+
+void initUI(const SyncMetadata& metadata)
 {
     if (!Initialise::isInstallDirExist())
     {
@@ -20,25 +39,12 @@ void initUI(SyncMetadata metadata)
 
         if (installPrompt.exec() == QMessageBox::Yes)
         {
-            auto createInstance = new CreateInstanceAction(metadata);
-            QProgressDialog createProgress("Installing instance...",
-                nullptr,
-                0,
-                createInstance->getStepNumber()-1);
-
-            QObject::connect(createInstance, &CreateInstanceAction::finishStep, [&createProgress]()
-            {
-                createProgress.setValue(createProgress.value() + 1);
-            });
-
-            createInstance->startAction();
-            createProgress.exec();
-
-
+            install(metadata);
         }
     } else
     {
-        QMessageBox::critical(nullptr, "None", "None");
+        auto* instanceToolsWindow = new InstanceTools();
+        instanceToolsWindow->show();
     }
 }
 
