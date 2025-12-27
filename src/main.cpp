@@ -6,6 +6,7 @@
 #include <QProgressDialog>
 #include <QObject>
 #include "InstanceTools.h"
+#include <QPushButton>
 
 void install(const SyncMetadata& metadata)
 {
@@ -22,9 +23,6 @@ void install(const SyncMetadata& metadata)
 
     createInstance->startAction();
     createProgress.exec();
-
-    auto* instanceToolsWindow = new InstanceTools();
-    instanceToolsWindow->show();
 }
 
 void initUI(const SyncMetadata& metadata)
@@ -40,6 +38,18 @@ void initUI(const SyncMetadata& metadata)
         if (installPrompt.exec() == QMessageBox::Yes)
         {
             install(metadata);
+            QMessageBox completePrompt;
+            completePrompt.setText("Install complete. Launch the Minecraft Launcher to play.");
+            completePrompt.addButton(QMessageBox::Ok);
+            QAbstractButton *editButton = completePrompt.addButton("Edit Instance", QMessageBox::YesRole);
+            completePrompt.setDefaultButton(QMessageBox::Ok);
+
+            completePrompt.exec();
+            if (completePrompt.clickedButton() == editButton)
+            {
+                auto* instanceToolsWindow = new InstanceTools();
+                instanceToolsWindow->show();
+            }
         }
     } else
     {
