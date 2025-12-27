@@ -6,37 +6,38 @@
 #include "LoaderInstaller.h"
 
 
-CreateInstanceAction::CreateInstanceAction(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer) :
-    loaderInstaller(loaderInstaller), fileSyncer(fileSyncer)
+CreateInstanceAction::CreateInstanceAction(SyncMetadata metadata) :
+    loaderInstaller(metadata.loaderID, metadata.loaderCMD),
+    fileSyncer(metadata.modsToRemove, metadata.modsToDownload)
 {}
 
 void CreateInstanceAction::startAction()
 {
-    fileSyncer->downloadMods();
+    fileSyncer.downloadMods();
 
-    connect(fileSyncer, &FileSyncer::modDownloaded, this, [this]()
+    connect(&fileSyncer, &FileSyncer::modDownloaded, this, [this]()
     {
         emit finishStep();
     });
 
-    loaderInstaller->downloadLoader();
+    loaderInstaller.downloadLoader();
 
-    connect(loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
+    connect(&loaderInstaller, &LoaderInstaller::loaderDownloadFinished, this, [this]()
     {
         emit finishStep();
-        loaderInstaller->installLoader();
+        loaderInstaller.installLoader();
 
-        connect(loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
+        connect(&loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
         {
             emit finishStep();
         });
     });
 
 
-    loaderInstaller->addProfile();
+    loaderInstaller.addProfile();
 }
 
 int CreateInstanceAction::getStepNumber() const
 {
-    return fileSyncer->modsToDownloadCount() + 2;
+    return fileSyncer.modsToDownloadCount() + 2;
 }

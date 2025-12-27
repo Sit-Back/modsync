@@ -20,8 +20,8 @@ class Initialise
     static bool isMinecraftDirExist();
 
     static QFuture<SyncAction*> createSyncAction();
-private:
     static QFuture<SyncMetadata> fetchSyncMetadata();
+private:
     static QStringList getModsToDownload(const QStringList& mods);
     static QStringList getModsToRemove(const QStringList& mods);
     static bool isValidMetadata(QString loaderID, QString loaderCMD);

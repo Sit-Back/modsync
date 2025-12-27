@@ -3,9 +3,20 @@
 #include <QDebug>
 #include <QFuture>
 #include "Initialise.h"
-#include "ui/MainWizard.h"
 #include "Initialise.h"
 #include <QFutureWatcher>
+
+void initUI(SyncMetadata metadata)
+{
+    if (Initialise::isInstallDirExist())
+    {
+
+        QMessageBox::critical(nullptr, "Exists", "Exists");
+    } else
+    {
+        QMessageBox::critical(nullptr, "None", "None");
+    }
+}
 
 int main(int argc, char* argv[])
 {
@@ -30,14 +41,13 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto watcher = new QFutureWatcher<SyncAction*>;
-    QObject::connect(watcher, &QFutureWatcher<SyncAction*>::finished, [watcher]()
+    auto watcher = new QFutureWatcher<SyncMetadata>;
+    QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher]()
     {
         try
         {
-            SyncAction* syncer = watcher->future().result();
-            auto wizard = new MainWizard(syncer);
-            wizard->show();
+            auto metadata = watcher->future().result();
+            initUI(metadata);
         }
         catch (const MetadataFetchError& e)
         {
@@ -46,7 +56,7 @@ int main(int argc, char* argv[])
         }
     });
 
-    QFuture<SyncAction*> syncerFuture = Initialise::createSyncAction();
+    QFuture<SyncMetadata> syncerFuture = Initialise::fetchSyncMetadata();
     watcher->setFuture(syncerFuture);
 
     return a.exec();
