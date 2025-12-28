@@ -16,11 +16,12 @@
 #include <QLabel>
 #include <QProgressDialog>
 #include "UpdateModsAction.h"
+#include <QFileDialog>
 
 InstanceTools::InstanceTools(const SyncMetadata& metadata, bool uptodate, QWidget* parent) :
 metadata(metadata), uptodate(uptodate)
 {
-    setFixedSize(400, 250);
+    setFixedSize(400, 300);
     auto* mainLayout = new QVBoxLayout;
     setLayout(mainLayout);
 
@@ -116,7 +117,7 @@ QGroupBox* InstanceTools::createToolGroup()
     auto* toolGroupLayout = new QGridLayout;
     toolGroup->setLayout(toolGroupLayout);
 
-    auto* removeButton = new QPushButton("Remove");
+    auto* removeButton = new QPushButton("Remove...");
     connect(removeButton, &QPushButton::pressed, this, [this]()
     {
         auto removeProfileWarning = new QMessageBox();
@@ -136,6 +137,14 @@ QGroupBox* InstanceTools::createToolGroup()
         });
     });
 
+    auto* addModsButton = new QPushButton("Add Mods...");
+    connect(addModsButton, &QPushButton::pressed, this, [this]()
+    {
+        QFileDialog::getOpenFileNames(this,
+            "Select one or more mods to add",
+            QDir::homePath(), "Java Archives  (*.jar)");
+    });
+
     auto* browseButton = new QPushButton("Browse...");
     connect(browseButton, &QPushButton::pressed, this, []()
     {
@@ -143,6 +152,7 @@ QGroupBox* InstanceTools::createToolGroup()
     });
 
     toolGroupLayout->addWidget(removeButton);
+    toolGroupLayout->addWidget(addModsButton);
     toolGroupLayout->addWidget(browseButton);
 
     return toolGroup;
