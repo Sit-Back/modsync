@@ -45,7 +45,6 @@ void LoaderInstaller::installLoader() const
         throw std::runtime_error("Cannot find loader.jar");
     }
 
-    qInfo() << silentInstallCMD;
     auto *loaderInstallerProcess = new QProcess();
     loaderInstallerProcess->start("java", silentInstallCMD.split(" "));
 
