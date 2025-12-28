@@ -140,9 +140,34 @@ QGroupBox* InstanceTools::createToolGroup()
     auto* addModsButton = new QPushButton("Add Mods...");
     connect(addModsButton, &QPushButton::pressed, this, [this]()
     {
-        QFileDialog::getOpenFileNames(this,
+        auto modFileNames = QFileDialog::getOpenFileNames(this,
             "Select one or more mods to add",
             QDir::homePath(), "Java Archives  (*.jar)");
+
+        for (QString filePath : modFileNames)
+        {
+            QString newFilePath = MODSDIR.absolutePath() + "/!" + QFileInfo(filePath).fileName();
+            if (QFile::exists(newFilePath))
+            {
+                QMessageBox existsWarning(QMessageBox::Icon::NoIcon,"File already exists", QFileInfo(filePath).fileName() +
+                    " already exists in the mods folder!");
+                auto* replaceButton = existsWarning.addButton("Replace", QMessageBox::ApplyRole);
+                existsWarning.addButton("Ignore", QMessageBox::AcceptRole);
+
+                existsWarning.exec();
+
+                if (existsWarning.clickedButton() == replaceButton)
+                {
+                    QFile::remove(newFilePath);
+                    QFile::copy(filePath, newFilePath);
+                }
+
+            } else
+            {
+                QFile::copy(filePath, newFilePath);
+            }
+
+        }
     });
 
     auto* browseButton = new QPushButton("Browse...");
