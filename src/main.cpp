@@ -47,7 +47,7 @@ void initUI(const SyncMetadata& metadata)
             completePrompt.exec();
             if (completePrompt.clickedButton() == editButton)
             {
-                auto* instanceToolsWindow = new InstanceTools(metadata);
+                auto* instanceToolsWindow = new InstanceTools(metadata, true);
                 instanceToolsWindow->show();
             }
         }

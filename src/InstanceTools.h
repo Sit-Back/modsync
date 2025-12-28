@@ -13,7 +13,7 @@
 class InstanceTools : public QWidget
 {
 public:
-    explicit InstanceTools(const SyncMetadata& metadata, QWidget* parent = nullptr);
+    explicit InstanceTools(const SyncMetadata& metadata, bool uptodate = false, QWidget* parent = nullptr);
 
 private:
     void update(QPushButton* updateButton, QLabel* label);
@@ -21,5 +21,6 @@ private:
     QGroupBox* createToolGroup();
     QWidget* createUpdateGroup();
     SyncMetadata metadata;
+    bool uptodate;
 
 };

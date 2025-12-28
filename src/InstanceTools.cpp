@@ -17,7 +17,8 @@
 #include <QProgressDialog>
 #include "UpdateModsAction.h"
 
-InstanceTools::InstanceTools(const SyncMetadata& metadata, QWidget* parent) : metadata(metadata)
+InstanceTools::InstanceTools(const SyncMetadata& metadata, bool uptodate, QWidget* parent) :
+metadata(metadata), uptodate(uptodate)
 {
     setFixedSize(400, 250);
     auto* mainLayout = new QVBoxLayout;
@@ -50,7 +51,7 @@ QWidget* InstanceTools::createUpdateGroup()
     updateLabel->setFont(font);
     layout->addWidget(updateLabel,0, Qt::AlignCenter);
 
-    if (metadata.modsToDownload.empty() && metadata.modsToRemove.empty())
+    if ((metadata.modsToDownload.empty() && metadata.modsToRemove.empty()) || uptodate)
     {
         updateLabel->setText("Up to Date!");
         updateButton->setDisabled(true);
