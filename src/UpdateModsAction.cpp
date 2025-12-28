@@ -6,20 +6,20 @@
 
 int UpdateModsAction::getStepNumber() const
 {
-    return fileSyncer->modsToDownloadCount();
+    return fileSyncer.modsToDownloadCount();
 }
 
 void UpdateModsAction::startAction()
 {
-    fileSyncer->downloadMods();
+    fileSyncer.downloadMods();
 
-    connect(fileSyncer, &FileSyncer::modDownloaded, this, [this]()
+    connect(&fileSyncer, &FileSyncer::modDownloaded, this, [this]()
     {
         emit finishStep();
     });
 
-    fileSyncer->removeExtras();
+    fileSyncer.removeExtras();
 }
 
-UpdateModsAction::UpdateModsAction(FileSyncer* fileSyncer) : fileSyncer(fileSyncer)
+UpdateModsAction::UpdateModsAction(const SyncMetadata& metadata) : fileSyncer(metadata.modsToRemove, metadata.modsToDownload)
 {}

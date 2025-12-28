@@ -47,7 +47,7 @@ void FileSyncer::downloadMod(const QString& modName)
     QNetworkReply* reply = manager.get(*request);
 
     auto* file = new QFile(MODSDIR.filePath(modUrl.fileName()));
-    if (!file->open(QIODevice::WriteOnly)) {throw std::runtime_error("Can't open file");}
+    if (!file->open(QIODevice::WriteOnly)) {throw std::runtime_error("Can't write mod .jar");}
 
     bool renamed = false;
 

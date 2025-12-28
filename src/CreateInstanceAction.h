@@ -7,11 +7,12 @@
 class CreateInstanceAction final : public SyncAction
 {
 public:
-    CreateInstanceAction(LoaderInstaller* loaderInstaller, FileSyncer* fileSyncer);
+    CreateInstanceAction(SyncMetadata metadata);
     void startAction() override;;
     [[nodiscard]] int getStepNumber() const override;
 
 private:
-    LoaderInstaller* loaderInstaller;
-    FileSyncer* fileSyncer;
+    bool createProfileDir();
+    LoaderInstaller loaderInstaller;
+    FileSyncer fileSyncer;
 };

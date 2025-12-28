@@ -15,11 +15,6 @@
 
 #include "UpdateModsAction.h"
 
-bool Initialise::createProfileDir()
-{
-    return QDir().mkpath(MODSDIR.path());
-}
-
 bool Initialise::isInstallDirExist()
 {
     return PROFILEDIR.exists();
@@ -153,42 +148,4 @@ QStringList Initialise::getModsToRemove(const QStringList& mods)
     }
 
     return modNamesRemove;
-}
-
-QFuture<SyncAction*> Initialise::createSyncAction()
-{
-    auto promise = QSharedPointer<QPromise<SyncAction*>>::create();
-    QFuture<SyncAction*> future = promise->future();
-
-    auto watcher = new QFutureWatcher<SyncMetadata>;
-    QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher, promise]()
-    {
-        try
-        {
-            if (PROFILEDIR.exists())
-            {
-                SyncMetadata metadata = watcher->future().result();
-                auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
-                promise->addResult(new UpdateModsAction(file));
-                promise->finish();
-            } else {
-                SyncMetadata metadata = watcher->future().result();
-                auto loader = new LoaderInstaller(metadata.loaderID, metadata.loaderCMD);
-                auto file = new FileSyncer(metadata.modsToRemove, metadata.modsToDownload);
-                promise->addResult(new CreateInstanceAction(loader, file));
-                promise->finish();
-            }
-
-        }
-        catch (const MetadataFetchError& e)
-        {
-            promise->setException(std::make_exception_ptr(e));
-            promise->finish();
-        }
-    });
-
-    QFuture<SyncMetadata> metatdata = Initialise::fetchSyncMetadata();
-    watcher->setFuture(metatdata);
-
-    return future;
 }

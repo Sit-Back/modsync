@@ -1,11 +1,62 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QDebug>
-#include <QFuture>
-#include "Initialise.h"
-#include "ui/MainWizard.h"
 #include "Initialise.h"
 #include <QFutureWatcher>
+#include <QProgressDialog>
+#include <QObject>
+#include "InstanceTools.h"
+#include <QPushButton>
+
+void install(const SyncMetadata& metadata)
+{
+    auto action = new CreateInstanceAction(metadata);
+    QProgressDialog createProgress("Installing instance...",
+        nullptr,
+        0,
+        action->getStepNumber()-1);
+
+    QObject::connect(action, &SyncAction::finishStep, [&createProgress]()
+    {
+        createProgress.setValue(createProgress.value() + 1);
+    });
+
+    action->startAction();
+    createProgress.exec();
+}
+
+void initUI(const SyncMetadata& metadata)
+{
+    if (!Initialise::isInstallDirExist())
+    {
+        QMessageBox installPrompt;
+        installPrompt.setText("No modsync instance was found."
+                              " Would you like to create one?");
+        installPrompt.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        installPrompt.setDefaultButton(QMessageBox::Yes);
+
+        if (installPrompt.exec() == QMessageBox::Yes)
+        {
+            install(metadata);
+            QMessageBox completePrompt;
+            completePrompt.setText("Install complete. Launch the Minecraft Launcher to play.");
+            completePrompt.addButton(QMessageBox::Ok);
+            QAbstractButton *editButton = completePrompt.addButton("Edit Instance", QMessageBox::YesRole);
+            completePrompt.setDefaultButton(QMessageBox::Ok);
+
+            completePrompt.exec();
+            if (completePrompt.clickedButton() == editButton)
+            {
+                auto* instanceToolsWindow = new InstanceTools(metadata);
+                instanceToolsWindow->show();
+            }
+        }
+    } else
+    {
+        auto* instanceToolsWindow = new InstanceTools(metadata);
+        instanceToolsWindow->show();
+    }
+}
 
 int main(int argc, char* argv[])
 {
@@ -30,14 +81,13 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto watcher = new QFutureWatcher<SyncAction*>;
-    QObject::connect(watcher, &QFutureWatcher<SyncAction*>::finished, [watcher]()
+    auto watcher = new QFutureWatcher<SyncMetadata>;
+    QObject::connect(watcher, &QFutureWatcher<SyncMetadata>::finished, [watcher]()
     {
         try
         {
-            SyncAction* syncer = watcher->future().result();
-            auto wizard = new MainWizard(syncer);
-            wizard->show();
+            auto metadata = watcher->future().result();
+            initUI(metadata);
         }
         catch (const MetadataFetchError& e)
         {
@@ -46,7 +96,7 @@ int main(int argc, char* argv[])
         }
     });
 
-    QFuture<SyncAction*> syncerFuture = Initialise::createSyncAction();
+    QFuture<SyncMetadata> syncerFuture = Initialise::fetchSyncMetadata();
     watcher->setFuture(syncerFuture);
 
     return a.exec();
