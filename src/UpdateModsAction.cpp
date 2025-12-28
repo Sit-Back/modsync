@@ -21,5 +21,5 @@ void UpdateModsAction::startAction()
     fileSyncer.removeExtras();
 }
 
-UpdateModsAction::UpdateModsAction(SyncMetadata metadata) : fileSyncer(metadata.modsToRemove, metadata.modsToDownload)
+UpdateModsAction::UpdateModsAction(const SyncMetadata& metadata) : fileSyncer(metadata.modsToRemove, metadata.modsToDownload)
 {}

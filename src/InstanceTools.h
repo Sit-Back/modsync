@@ -15,8 +15,10 @@ public:
     explicit InstanceTools(const SyncMetadata& metadata, QWidget* parent = nullptr);
 
 private:
+    void update();
     QPushButton* createUpdateButton();
     QGroupBox* createToolGroup();
     QWidget* createUpdateGroup();
-    const SyncMetadata& metadata;
+    SyncMetadata metadata;
+
 };

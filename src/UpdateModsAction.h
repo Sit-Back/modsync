@@ -11,7 +11,7 @@
 class UpdateModsAction : public SyncAction
 {
 public:
-    UpdateModsAction(SyncMetadata metadata);
+    UpdateModsAction(const SyncMetadata& metadata);
     [[nodiscard]] int getStepNumber() const override;
     void startAction() override;
 private:

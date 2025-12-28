@@ -10,18 +10,18 @@
 
 void install(const SyncMetadata& metadata)
 {
-    auto createInstance = new CreateInstanceAction(metadata);
+    auto action = new CreateInstanceAction(metadata);
     QProgressDialog createProgress("Installing instance...",
         nullptr,
         0,
-        createInstance->getStepNumber()-1);
+        action->getStepNumber()-1);
 
-    QObject::connect(createInstance, &CreateInstanceAction::finishStep, [&createProgress]()
+    QObject::connect(action, &SyncAction::finishStep, [&createProgress]()
     {
         createProgress.setValue(createProgress.value() + 1);
     });
 
-    createInstance->startAction();
+    action->startAction();
     createProgress.exec();
 }
 

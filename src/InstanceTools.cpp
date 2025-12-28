@@ -14,6 +14,8 @@
 #include "Locations.h"
 #include <QDesktopServices>
 #include <QLabel>
+#include <QProgressDialog>
+#include "UpdateModsAction.h"
 
 InstanceTools::InstanceTools(const SyncMetadata& metadata, QWidget* parent) : metadata(metadata)
 {
@@ -41,14 +43,47 @@ QWidget* InstanceTools::createUpdateGroup()
     QPushButton* updateButton = createUpdateButton();
     layout->addWidget(updateButton,0, Qt::AlignCenter);
 
-    auto* updateLabel = new QLabel("Update availiable!");
+    auto* updateLabel = new QLabel;
     QFont font;
     font.setPointSizeF(font.pointSizeF() * 0.9);
     font.setItalic(true);
     updateLabel->setFont(font);
     layout->addWidget(updateLabel,0, Qt::AlignCenter);
 
+    if (metadata.modsToDownload.empty() && metadata.modsToRemove.empty())
+    {
+        updateLabel->setText("Up to Date!");
+        updateButton->setDisabled(true);
+    } else
+    {
+        updateLabel->setText("Update availiable!");
+
+        connect(updateButton, &QPushButton::pressed, this, [this]()
+        {
+            update();
+        });
+    }
+
     return wrapper;
+}
+
+void InstanceTools::update()
+{
+    auto action = new UpdateModsAction(metadata);
+    QProgressDialog updateProgress("Updating...",
+        nullptr,
+        0,
+        action->getStepNumber()-1);
+
+    QObject::connect(action, &SyncAction::finishStep, [&updateProgress]()
+    {
+        updateProgress.setValue(updateProgress.value() + 1);
+    });
+
+    action->startAction();
+    updateProgress.exec();
+
+
 }
 
 QPushButton* InstanceTools::createUpdateButton()
