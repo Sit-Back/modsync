@@ -47,13 +47,13 @@ void initUI(const SyncMetadata& metadata)
             completePrompt.exec();
             if (completePrompt.clickedButton() == editButton)
             {
-                auto* instanceToolsWindow = new InstanceTools();
+                auto* instanceToolsWindow = new InstanceTools(metadata);
                 instanceToolsWindow->show();
             }
         }
     } else
     {
-        auto* instanceToolsWindow = new InstanceTools();
+        auto* instanceToolsWindow = new InstanceTools(metadata);
         instanceToolsWindow->show();
     }
 }

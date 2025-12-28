@@ -6,14 +6,17 @@
 #include <QPushButton>
 #include <qwidget.h>
 
+#include "SyncMetadata.h"
+
 
 class InstanceTools : public QWidget
 {
 public:
-    explicit InstanceTools(QWidget* parent = nullptr);
+    explicit InstanceTools(const SyncMetadata& metadata, QWidget* parent = nullptr);
 
 private:
     QPushButton* createUpdateButton();
     QGroupBox* createToolGroup();
     QWidget* createUpdateGroup();
+    const SyncMetadata& metadata;
 };

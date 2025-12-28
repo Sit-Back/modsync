@@ -15,9 +15,8 @@
 #include <QDesktopServices>
 #include <QLabel>
 
-InstanceTools::InstanceTools(QWidget* parent)
+InstanceTools::InstanceTools(const SyncMetadata& metadata, QWidget* parent) : metadata(metadata)
 {
-
     setFixedSize(400, 250);
     auto* mainLayout = new QVBoxLayout;
     setLayout(mainLayout);
