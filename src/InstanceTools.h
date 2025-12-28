@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <QGroupBox>
+#include <QLabel>
 #include <QPushButton>
 #include <qwidget.h>
 
@@ -15,7 +16,7 @@ public:
     explicit InstanceTools(const SyncMetadata& metadata, QWidget* parent = nullptr);
 
 private:
-    void update();
+    void update(QPushButton* updateButton, QLabel* label);
     QPushButton* createUpdateButton();
     QGroupBox* createToolGroup();
     QWidget* createUpdateGroup();

@@ -58,32 +58,40 @@ QWidget* InstanceTools::createUpdateGroup()
     {
         updateLabel->setText("Update availiable!");
 
-        connect(updateButton, &QPushButton::pressed, this, [this]()
+        connect(updateButton, &QPushButton::pressed, this, [this,updateButton, updateLabel]()
         {
-            update();
+            update(updateButton, updateLabel);
         });
     }
 
     return wrapper;
 }
 
-void InstanceTools::update()
+void InstanceTools::update(QPushButton* updateButton, QLabel* label)
 {
     auto action = new UpdateModsAction(metadata);
-    QProgressDialog updateProgress("Updating...",
+
+    if (action->getStepNumber() > 0)
+    {
+        QProgressDialog updateProgress("Updating...",
         nullptr,
         0,
         action->getStepNumber()-1);
 
-    QObject::connect(action, &SyncAction::finishStep, [&updateProgress]()
+        QObject::connect(action, &SyncAction::finishStep, [&updateProgress]()
+        {
+            updateProgress.setValue(updateProgress.value() + 1);
+        });
+
+        action->startAction();
+        updateProgress.exec();
+    } else
     {
-        updateProgress.setValue(updateProgress.value() + 1);
-    });
+        action->startAction();
+    }
 
-    action->startAction();
-    updateProgress.exec();
-
-
+    updateButton->setDisabled(true);
+    label->setText("Finished!");
 }
 
 QPushButton* InstanceTools::createUpdateButton()
