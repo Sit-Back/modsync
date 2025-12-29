@@ -4,7 +4,7 @@
 #include "SyncAction.h"
 #include "SyncMetadata.h"
 
-class CreateInstanceAction final : public SyncAction
+class CreateInstanceAction : public SyncAction
 {
 public:
     CreateInstanceAction(SyncMetadata metadata);
