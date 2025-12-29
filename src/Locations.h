@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <QUrl>
+
 //Constants
 #ifdef Q_OS_WIN
   inline static const auto MINECRAFTDIR = QDir(QDir::homePath() + "/AppData/Roaming/.minecraft");

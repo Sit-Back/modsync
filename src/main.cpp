@@ -5,7 +5,7 @@
 #include <QFutureWatcher>
 #include <QProgressDialog>
 #include <QObject>
-#include "InstanceTools.h"
+#include "EditInstanceUI.h"
 #include <QPushButton>
 
 void install(const SyncMetadata& metadata)
@@ -47,13 +47,13 @@ void initUI(const SyncMetadata& metadata)
             completePrompt.exec();
             if (completePrompt.clickedButton() == editButton)
             {
-                auto* instanceToolsWindow = new InstanceTools(metadata, true);
+                auto* instanceToolsWindow = new EditInstanceUI(metadata, true);
                 instanceToolsWindow->show();
             }
         }
     } else
     {
-        auto* instanceToolsWindow = new InstanceTools(metadata);
+        auto* instanceToolsWindow = new EditInstanceUI(metadata);
         instanceToolsWindow->show();
     }
 }

@@ -15,4 +15,5 @@ private:
     bool createProfileDir();
     LoaderInstaller loaderInstaller;
     FileSyncer fileSyncer;
+    SyncMetadata metadata;
 };

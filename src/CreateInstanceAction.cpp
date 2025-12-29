@@ -3,13 +3,16 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QProcess>
+
+#include "InstanceTools.h"
 #include "LoaderInstaller.h"
 #include "Locations.h"
 
 
 CreateInstanceAction::CreateInstanceAction(SyncMetadata metadata) :
     loaderInstaller(metadata.loaderID, metadata.loaderCMD),
-    fileSyncer(metadata.modsToRemove, metadata.modsToDownload)
+    fileSyncer(metadata.modsToRemove, metadata.modsToDownload),
+    metadata(metadata)
 {}
 
 bool CreateInstanceAction::createProfileDir()
@@ -35,14 +38,21 @@ void CreateInstanceAction::startAction()
         emit finishStep();
         loaderInstaller.installLoader();
 
-        connect(&loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
+        if (!InstanceTools::loaderVersionExists(metadata.loaderID))
+        {
+            connect(&loaderInstaller, &LoaderInstaller::loaderInstalled, this, [this]()
+            {
+                emit finishStep();
+            });
+        } else
         {
             emit finishStep();
-        });
+        }
+
     });
 
 
-    loaderInstaller.addProfile();
+    InstanceTools::addProfile(metadata.loaderID);
 }
 
 int CreateInstanceAction::getStepNumber() const

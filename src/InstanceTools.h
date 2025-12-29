@@ -1,25 +1,19 @@
 //
-// Created by mitch on 28/12/25.
+// Created by mitch on 29/12/25.
 //
-#pragma once
-#include <QGroupBox>
-#include <QLabel>
-#include <QPushButton>
-#include <qwidget.h>
 
-#include "SyncMetadata.h"
+#ifndef MODSYNC_INSTANCETOOLS_H
+#define MODSYNC_INSTANCETOOLS_H
+#include <QString>
 
-
-class InstanceTools : public QWidget
+namespace InstanceTools
 {
-public:
-    explicit InstanceTools(const SyncMetadata& metadata, bool uptodate = false, QWidget* parent = nullptr);
-private:
-    void update(QPushButton* updateButton, QLabel* label);
-    QPushButton* createUpdateButton();
-    QGroupBox* createToolGroup();
-    QWidget* createUpdateGroup();
-    SyncMetadata metadata;
-    bool uptodate;
+    bool removeInstallDir();
+    void addProfile(QString loaderID);
+    bool removeProfile();
+    bool loaderVersionExists(QString loaderID);
+}
 
-};
+
+
+#endif //MODSYNC_INSTANCETOOLS_H

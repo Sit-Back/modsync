@@ -29,10 +29,12 @@ qt_add_executable(modsync
         src/SyncAction.h
         src/UpdateModsAction.cpp
         src/UpdateModsAction.h
-        src/InstanceTools.cpp
-        src/InstanceTools.h
+        src/EditInstanceUI.cpp
+        src/EditInstanceUI.h
         src/ReplaceInstanceAction.cpp
         src/ReplaceInstanceAction.h
+        src/InstanceTools.cpp
+        src/InstanceTools.h
 )
 
 target_link_libraries(modsync

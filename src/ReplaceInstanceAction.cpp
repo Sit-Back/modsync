@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "Initialise.h"
+#include "InstanceTools.h"
 
 ReplaceInstanceAction::ReplaceInstanceAction(SyncMetadata metadata) :
     CreateInstanceAction(std::move(metadata))
@@ -14,7 +15,7 @@ ReplaceInstanceAction::ReplaceInstanceAction(SyncMetadata metadata) :
 
 void ReplaceInstanceAction::startAction()
 {
-    Initialise::removeInstallDir();
-    LoaderInstaller::removeProfile();
+    InstanceTools::removeInstallDir();
+    InstanceTools::removeProfile();
     CreateInstanceAction::startAction();
 }

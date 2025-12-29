@@ -1,184 +1,157 @@
 //
-// Created by mitch on 28/12/25.
+// Created by mitch on 29/12/25.
 //
 
 #include "InstanceTools.h"
 
-#include <QApplication>
-#include <QVBoxLayout>
-#include <QGroupBox>
-#include <QMessageBox>
-#include <QPushButton>
+#include <QDir>
+#include <QRegularExpression>
 
-#include "Initialise.h"
 #include "Locations.h"
-#include <QDesktopServices>
-#include <QLabel>
-#include <QProgressDialog>
-#include "UpdateModsAction.h"
-#include <QFileDialog>
 
-InstanceTools::InstanceTools(const SyncMetadata& metadata, bool uptodate, QWidget* parent) :
-metadata(metadata), uptodate(uptodate)
+bool InstanceTools::removeInstallDir()
 {
-    setFixedSize(400, 300);
-    auto* mainLayout = new QVBoxLayout;
-    setLayout(mainLayout);
-
-    auto* updateGroup = createUpdateGroup();
-    mainLayout->addWidget(updateGroup, 0, Qt::AlignCenter);
-
-    auto* line = new QFrame;
-    line->setFrameShape(QFrame::HLine);
-    mainLayout->addWidget(line);
-
-    auto* toolGroup = createToolGroup();
-    mainLayout->addWidget(toolGroup);
+    return QDir(PROFILEDIR).removeRecursively();
 }
 
-QWidget* InstanceTools::createUpdateGroup()
+bool InstanceTools::removeProfile()
 {
-    auto* wrapper = new QWidget;
-    auto* layout = new QVBoxLayout;
-    wrapper->setLayout(layout);
+    static const QRegularExpression rs("\\s");
 
-    QPushButton* updateButton = createUpdateButton();
-    layout->addWidget(updateButton,0, Qt::AlignCenter);
+    auto launcherJson = QFile(
+        MINECRAFTDIR.filePath("launcher_profiles.json"));
 
-    auto* updateLabel = new QLabel;
-    QFont font;
-    font.setPointSizeF(font.pointSizeF() * 0.9);
-    font.setItalic(true);
-    updateLabel->setFont(font);
-    layout->addWidget(updateLabel,0, Qt::AlignCenter);
-
-    if ((metadata.modsToDownload.empty() && metadata.modsToRemove.empty()) || uptodate)
+    if (!launcherJson.open(QIODevice::ReadOnly))
     {
-        updateLabel->setText("Up to Date!");
-        updateButton->setDisabled(true);
-    } else
-    {
-        updateLabel->setText("Update availiable!");
-
-        connect(updateButton, &QPushButton::pressed, this, [this,updateButton, updateLabel]()
-        {
-            update(updateButton, updateLabel);
-        });
+        throw std::runtime_error("Insufficient read permissions"
+                                 " to remove profile from launcher_profiles.json");
     }
 
-    return wrapper;
-}
+    QString data = launcherJson.readAll();
+    data.remove(rs);
+    std::string modsyncFlag = "\"modsync\":{";
+    std::size_t startOffset = data.toStdString().find(modsyncFlag);
 
-void InstanceTools::update(QPushButton* updateButton, QLabel* label)
-{
-    auto action = new UpdateModsAction(metadata);
-
-    if (action->getStepNumber() > 0)
+    if (startOffset == std::string::npos)
     {
-        QProgressDialog updateProgress("Updating...",
-        nullptr,
-        0,
-        action->getStepNumber()-1);
-
-        QObject::connect(action, &SyncAction::finishStep, [&updateProgress]()
-        {
-            updateProgress.setValue(updateProgress.value() + 1);
-        });
-
-        action->startAction();
-        updateProgress.exec();
-    } else
-    {
-        action->startAction();
+        return false;
     }
 
-    updateButton->setDisabled(true);
-    label->setText("Finished!");
-}
-
-QPushButton* InstanceTools::createUpdateButton()
-{
-    auto* updateButton = new QPushButton("Update");
-    QFont font;
-    font.setPointSizeF(font.pointSizeF() * 1.2);
-    font.setBold(true);
-    updateButton->setFont(font);
-    updateButton->setStyleSheet("padding: 10px 25px;");
-    QSizePolicy policy = updateButton->sizePolicy();
-    policy.setHorizontalPolicy(QSizePolicy::Fixed);
-    policy.setVerticalPolicy(QSizePolicy::Fixed);
-    updateButton->setSizePolicy(policy);
-    return updateButton;
-}
-
-QGroupBox* InstanceTools::createToolGroup()
-{
-    auto* toolGroup = new QGroupBox("Tools");
-    auto* toolGroupLayout = new QGridLayout;
-    toolGroup->setLayout(toolGroupLayout);
-
-    auto* removeButton = new QPushButton("Remove...");
-    connect(removeButton, &QPushButton::pressed, this, [this]()
+    if (data[startOffset - 1] != '{')
     {
-        auto removeProfileWarning = new QMessageBox();
-        removeProfileWarning->setText("Are you sure you want to remove the current profile?");
-        removeProfileWarning->setInformativeText("This will remove all client data including binds,"
-                                                 " map data and video settings!");
-        removeProfileWarning->setIcon(QMessageBox::Warning);
-        removeProfileWarning->setStandardButtons(QMessageBox::Apply);
-        removeProfileWarning->show();
-        connect(removeProfileWarning, &QMessageBox::buttonClicked, [removeProfileWarning]()
-        {
-            removeProfileWarning->hide();
-            Initialise::removeInstallDir();
-            LoaderInstaller::removeProfile();
-            QMessageBox::information(nullptr, "Removed Profile", "Finished removing profile.");
-            QApplication::quit();
-        });
-    });
+        startOffset--;
+    }
 
-    auto* addModsButton = new QPushButton("Add Mods...");
-    connect(addModsButton, &QPushButton::pressed, this, [this]()
+    int finishOffset = 0;
+    for (int i = startOffset; i < data.size(); i++)
     {
-        auto modFileNames = QFileDialog::getOpenFileNames(this,
-            "Select one or more mods to add",
-            QDir::homePath(), "Java Archives  (*.jar)");
-
-        for (QString filePath : modFileNames)
+        finishOffset++;
+        if (data[i] == "}" )
         {
-            QString newFilePath = MODSDIR.absolutePath() + "/!" + QFileInfo(filePath).fileName();
-            if (QFile::exists(newFilePath))
+            if (data[i + 1] == ',')
             {
-                QMessageBox existsWarning(QMessageBox::Icon::NoIcon,"File already exists", QFileInfo(filePath).fileName() +
-                    " already exists in the mods folder!");
-                auto* replaceButton = existsWarning.addButton("Replace", QMessageBox::ApplyRole);
-                existsWarning.addButton("Ignore", QMessageBox::AcceptRole);
-
-                existsWarning.exec();
-
-                if (existsWarning.clickedButton() == replaceButton)
-                {
-                    QFile::remove(newFilePath);
-                    QFile::copy(filePath, newFilePath);
-                }
-
-            } else
-            {
-                QFile::copy(filePath, newFilePath);
+                finishOffset++;
             }
-
+            break;
         }
-    });
+    }
+    data.remove(startOffset, finishOffset);
+    launcherJson.close();
 
-    auto* browseButton = new QPushButton("Browse...");
-    connect(browseButton, &QPushButton::pressed, this, []()
+    if (!launcherJson.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {
-        QDesktopServices::openUrl(QUrl::fromLocalFile(PROFILEDIR.path()));
-    });
+        throw std::runtime_error("Insufficient read permissions"
+                                 " to remove profile from launcher_profiles.json");
+    }
 
-    toolGroupLayout->addWidget(removeButton);
-    toolGroupLayout->addWidget(addModsButton);
-    toolGroupLayout->addWidget(browseButton);
+    launcherJson.write(data.toUtf8());
+    launcherJson.close();
 
-    return toolGroup;
+    return true;
+}
+
+void InstanceTools::addProfile(QString loaderID)
+{
+    QString profileString = R"(
+    "modsync": {
+      "lastUsed": "1970-01-02T00:00:00.000Z",
+      "lastVersionId": "%1",
+      "created": "1970-01-02T00:00:00.000Z",
+      "gameDir" : "%2",
+      "name": "Modsync",
+      "icon": "Dirt",
+      "type": "custom"
+    },)";
+    QString gameDir = QDir::toNativeSeparators(PROFILEDIR.path());
+#ifdef Q_OS_WIN
+    gameDir = gameDir.replace("\\","\\\\");
+#endif
+    profileString = profileString.arg(loaderID, gameDir);
+
+
+    static const QRegularExpression rs("\\s");
+    profileString.remove(rs);
+
+    auto profiles = QFile(MINECRAFTDIR.filePath("launcher_profiles.json"));
+    if (!profiles.exists())
+    {
+        throw std::runtime_error("launcher_profiles.json does not exist");
+    }
+
+    if (removeProfile())
+    {
+        qInfo() << "Existing launcher profile found, attempting replace";
+    }
+
+    if (profiles.open(QIODevice::ReadOnly))
+    {
+        QString data = profiles.readAll();
+        data.remove(rs);
+
+
+        std::string profilesFlag = "\"profiles\":{";
+        std::size_t profilesFlagPos = data.toStdString().find(profilesFlag);
+
+        if (profilesFlagPos == std::string::npos)
+        {
+            profiles.close();
+            throw std::runtime_error("Corrupt launcher_profiles.json");
+        }
+
+        data.insert(profilesFlagPos + profilesFlag.size(), profileString);
+        profiles.close();
+        if (profiles.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            profiles.write(data.toUtf8());
+            profiles.close();
+            qInfo() << "Launcher profile added successfully";
+        }
+        else
+        {
+            throw std::runtime_error("Cannot write to launcher_profiles.json");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Insufficient permissions to read from launcher_profiles.json");
+    }
+}
+
+bool InstanceTools::loaderVersionExists(QString loaderID)
+{
+    QDir versionsPath(MINECRAFTDIR);
+    versionsPath.cd("versions");
+    QStringList versions = versionsPath.entryList(QDir::Dirs);
+    if (std::any_of(versions.begin(), versions.end(), [loaderID](const QString& version)
+    {
+        return version == loaderID;
+    }))
+    {
+        qInfo() << "Loader found.";
+        return true;
+    } else
+    {
+        qInfo() << "No loader found.";
+        return false;
+    }
 }

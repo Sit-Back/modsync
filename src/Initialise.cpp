@@ -31,11 +31,6 @@ bool Initialise::isJavaInstalled()
     return !javaExe.isEmpty();
 }
 
-bool Initialise::removeInstallDir()
-{
-    return QDir(PROFILEDIR).removeRecursively();
-}
-
 bool Initialise::isValidMetadata(QString loaderID, QString loaderCMD)
 {
     if (!loaderCMD.isEmpty() && !loaderID.isEmpty())
